@@ -331,6 +331,13 @@ bot.command("resetlimits", async (ctx) => {
     return;
   }
 
+  const adminTelegramId = process.env.ADMIN_TELEGRAM_ID;
+
+  if (!adminTelegramId || String(ctx.from.id) !== adminTelegramId) {
+    await ctx.reply("You are not allowed to use this command.");
+    return;
+  }
+
   const user = await getUserByTelegramId(ctx.from.id);
 
   if (!user) {
@@ -348,7 +355,7 @@ bot.command("resetlimits", async (ctx) => {
     },
   });
 
-  await ctx.reply("Daily generation limit has been reset for this user.");
+  await ctx.reply("Admin: daily generation limit has been reset for your user.");
 });
 
 bot.command("saved", async (ctx) => {
@@ -1206,4 +1213,140 @@ bot.command("feedback", async (ctx) => {
   );
 
   await ctx.reply("Thanks. Your feedback was sent.");
+});
+
+
+bot.command("admin_stats", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.reply("I could not read your Telegram profile.");
+    return;
+  }
+
+  const adminTelegramId = process.env.ADMIN_TELEGRAM_ID;
+
+  if (!adminTelegramId || String(ctx.from.id) !== adminTelegramId) {
+    await ctx.reply("You are not allowed to use this admin command.");
+    return;
+  }
+
+  const now = new Date();
+  const startOfTodayUtc = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0)
+  );
+
+  const totalUsers = await prisma.user.count();
+  const activeUsers = await prisma.user.count({
+    where: {
+      state: "ACTIVE",
+    },
+  });
+  const freeUsers = await prisma.user.count({
+    where: {
+      tier: "FREE",
+    },
+  });
+  const proUsers = await prisma.user.count({
+    where: {
+      tier: "PRO",
+    },
+  });
+  const creatorUsers = await prisma.user.count({
+    where: {
+      tier: "CREATOR",
+    },
+  });
+  const totalContentPacks = await prisma.contentPack.count();
+  const savedContentPacks = await prisma.contentPack.count({
+    where: {
+      saved: true,
+    },
+  });
+  const contentPacksToday = await prisma.contentPack.count({
+    where: {
+      createdAt: {
+        gte: startOfTodayUtc,
+      },
+    },
+  });
+  const aiActionsTodayAggregate = await prisma.user.aggregate({
+    where: {
+      lastResetDate: {
+        gte: startOfTodayUtc,
+      },
+    },
+    _sum: {
+      dailyGenerations: true,
+    },
+  });
+
+  const aiActionsToday = aiActionsTodayAggregate._sum.dailyGenerations ?? 0;
+
+  await ctx.reply(
+    [
+      "Admin stats",
+      "",
+      "Users:",
+      `Total users: ${totalUsers}`,
+      `Active users: ${activeUsers}`,
+      `FREE users: ${freeUsers}`,
+      `PRO users: ${proUsers}`,
+      `CREATOR users: ${creatorUsers}`,
+      "",
+      "Content:",
+      `Total content packs: ${totalContentPacks}`,
+      `Saved content packs: ${savedContentPacks}`,
+      `Content packs today UTC: ${contentPacksToday}`,
+      "",
+      "Usage:",
+      `AI actions today UTC: ${aiActionsToday}`,
+      "",
+      `Checked at: ${now.toISOString()}`,
+    ].join("\n")
+  );
+});
+
+bot.command("admin_users", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.reply("I could not read your Telegram profile.");
+    return;
+  }
+
+  const adminTelegramId = process.env.ADMIN_TELEGRAM_ID;
+
+  if (!adminTelegramId || String(ctx.from.id) !== adminTelegramId) {
+    await ctx.reply("You are not allowed to use this admin command.");
+    return;
+  }
+
+  const users = await prisma.user.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 10,
+  });
+
+  if (users.length === 0) {
+    await ctx.reply("No users found.");
+    return;
+  }
+
+  const message = users
+    .map((user, index) => {
+      return [
+        `${index + 1}. User`,
+        `Telegram ID: ${user.telegramId.toString()}`,
+        `Username: ${user.username ? "@" + user.username : "none"}`,
+        `First name: ${user.firstName ?? "none"}`,
+        `State: ${user.state}`,
+        `Tier: ${user.tier}`,
+        `Platform: ${user.platform ?? "not set"}`,
+        `Niche: ${user.niche ?? "not set"}`,
+        `Style: ${user.style ?? "not set"}`,
+        `AI actions today: ${user.dailyGenerations}`,
+        `Created: ${user.createdAt.toISOString().slice(0, 10)}`,
+      ].join("\n");
+    })
+    .join("\n\n---\n\n");
+
+  await ctx.reply(["Admin users", "", message].join("\n"));
 });
