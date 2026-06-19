@@ -1,0 +1,1209 @@
+﻿import { Bot, InlineKeyboard } from "grammy";
+import { env } from "../env.js";
+import { prisma } from "../db/prisma.js";
+import { generateContentPack, generateMoreHooks, rewriteForX, makeItViral } from "../ai/contentPack.js";
+
+export const bot = new Bot(env.botToken);
+
+const freeLimit = 3;
+
+async function getUserByTelegramId(telegramId: number) {
+  return prisma.user.findUnique({
+    where: {
+      telegramId: BigInt(telegramId),
+    },
+  });
+}
+
+type AppUser = NonNullable<Awaited<ReturnType<typeof getUserByTelegramId>>>;
+
+function isNewUtcDay(lastResetDate: Date) {
+  const now = new Date();
+  const lastReset = new Date(lastResetDate);
+
+  return (
+    now.getUTCFullYear() !== lastReset.getUTCFullYear() ||
+    now.getUTCMonth() !== lastReset.getUTCMonth() ||
+    now.getUTCDate() !== lastReset.getUTCDate()
+  );
+}
+
+async function resetDailyLimitIfNeeded(user: AppUser | null): Promise<AppUser | null> {
+  if (!user) return null;
+
+  if (!isNewUtcDay(user.lastResetDate)) {
+    return user;
+  }
+
+  return prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      dailyGenerations: 0,
+      lastResetDate: new Date(),
+    },
+  });
+}
+
+async function checkLimit(
+  user: AppUser | null
+): Promise<
+  | { allowed: false; message: string }
+  | { allowed: true; user: AppUser }
+> {
+  if (!user) {
+    return {
+      allowed: false,
+      message: "Please start first with /start.",
+    };
+  }
+
+  const freshUser = await resetDailyLimitIfNeeded(user);
+
+  if (!freshUser) {
+    return {
+      allowed: false,
+      message: "Please start first with /start.",
+    };
+  }
+
+  if (freshUser.tier === "FREE" && freshUser.dailyGenerations >= freeLimit) {
+    return {
+      allowed: false,
+      message: [
+        "You have reached your free daily limit.",
+        "",
+        "Free plan: 3 AI actions per day.",
+        "Pro plan will unlock more generations.",
+      ].join("\n"),
+    };
+  }
+
+  return {
+    allowed: true,
+    user: freshUser,
+  };
+}
+
+async function incrementDailyGenerations(userId: string) {
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      dailyGenerations: {
+        increment: 1,
+      },
+    },
+  });
+}
+
+function contentPackKeyboard() {
+  return new InlineKeyboard()
+    .text("More hooks", "action:more_hooks")
+    .text("Make it viral", "action:make_viral")
+    .row()
+    .text("Rewrite for X", "action:rewrite_x")
+    .text("Save idea", "action:save_idea");
+}
+
+bot.command("start", async (ctx) => {
+  const from = ctx.from;
+
+  if (!from) {
+    await ctx.reply("I could not read your Telegram profile. Please try again.");
+    return;
+  }
+
+  const user = await prisma.user.upsert({
+    where: {
+      telegramId: BigInt(from.id),
+    },
+    update: {
+      username: from.username ?? null,
+      firstName: from.first_name ?? null,
+    },
+    create: {
+      telegramId: BigInt(from.id),
+      username: from.username ?? null,
+      firstName: from.first_name ?? null,
+      state: "ONBOARDING",
+    },
+  });
+
+  const keyboard = new InlineKeyboard()
+    .text("X", "platform:X")
+    .text("TikTok", "platform:TIKTOK")
+    .row()
+    .text("Instagram Reels", "platform:INSTAGRAM_REELS")
+    .row()
+    .text("YouTube Shorts", "platform:YOUTUBE_SHORTS")
+    .text("Multi", "platform:MULTI");
+
+  await ctx.reply(
+    [
+      `gm ${user.firstName ?? "creator"}`,
+      "",
+      "Welcome to Crypto Content Copilot.",
+      "",
+      "Get daily content ideas for crypto and finance creators:",
+      "- scroll-stopping hooks",
+      "- short-form video ideas",
+      "- 30-60 second scripts",
+      "- X posts and threads",
+      "- viral angles",
+      "- daily automatic content push",
+      "",
+      "No financial advice.",
+      "No buy/sell signals.",
+      "No leverage calls.",
+      "",
+      "Just creator content you can publish faster.",
+      "",
+      "First question: what is your main platform?",
+    ].join("\n"),
+    {
+      reply_markup: keyboard,
+    }
+  );
+});
+
+bot.callbackQuery(/^platform:/, async (ctx) => {
+  const platform = ctx.callbackQuery.data.replace("platform:", "");
+
+  if (!ctx.from) {
+    await ctx.answerCallbackQuery("Missing Telegram profile.");
+    return;
+  }
+
+  await prisma.user.update({
+    where: {
+      telegramId: BigInt(ctx.from.id),
+    },
+    data: {
+      platform: platform as any,
+    },
+  });
+
+  const keyboard = new InlineKeyboard()
+    .text("Bitcoin", "niche:BITCOIN")
+    .text("Crypto Trading", "niche:CRYPTO_TRADING")
+    .row()
+    .text("DeFi", "niche:DEFI")
+    .text("Macro", "niche:MACRO")
+    .row()
+    .text("Stocks", "niche:STOCKS")
+    .text("Personal Finance", "niche:PERSONAL_FINANCE")
+    .row()
+    .text("Other", "niche:OTHER");
+
+  await ctx.answerCallbackQuery();
+  await ctx.reply("Nice. What is your main niche?", {
+    reply_markup: keyboard,
+  });
+});
+
+bot.callbackQuery(/^niche:/, async (ctx) => {
+  const niche = ctx.callbackQuery.data.replace("niche:", "");
+
+  if (!ctx.from) {
+    await ctx.answerCallbackQuery("Missing Telegram profile.");
+    return;
+  }
+
+  await prisma.user.update({
+    where: {
+      telegramId: BigInt(ctx.from.id),
+    },
+    data: {
+      niche: niche as any,
+    },
+  });
+
+  const keyboard = new InlineKeyboard()
+    .text("Educational", "style:EDUCATIONAL")
+    .text("Contrarian", "style:CONTRARIAN")
+    .row()
+    .text("Storytelling", "style:STORYTELLING")
+    .text("Data-driven", "style:DATA_DRIVEN")
+    .row()
+    .text("Meme / Viral", "style:MEME_VIRAL")
+    .row()
+    .text("Founder Brand", "style:FOUNDER_BRAND");
+
+  await ctx.answerCallbackQuery();
+  await ctx.reply("Good. What content style fits you best?", {
+    reply_markup: keyboard,
+  });
+});
+
+bot.callbackQuery(/^style:/, async (ctx) => {
+  const style = ctx.callbackQuery.data.replace("style:", "");
+
+  if (!ctx.from) {
+    await ctx.answerCallbackQuery("Missing Telegram profile.");
+    return;
+  }
+
+  await prisma.user.update({
+    where: {
+      telegramId: BigInt(ctx.from.id),
+    },
+    data: {
+      style: style as any,
+      state: "ACTIVE",
+    },
+  });
+
+  await ctx.answerCallbackQuery();
+
+  await ctx.reply(
+    [
+      "Perfect. Your creator profile is ready.",
+      "",
+      "Now send /today and I will generate your first crypto content pack.",
+      "",
+      "Later this will become an automatic daily push.",
+    ].join("\n")
+  );
+});
+
+bot.command("today", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.reply("I could not read your Telegram profile. Please try again.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(ctx.from.id);
+
+  if (!user) {
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  if (!user.platform || !user.niche || !user.style) {
+    await ctx.reply("Your onboarding is not complete yet. Please type /start.");
+    return;
+  }
+
+  const limitCheck = await checkLimit(user);
+
+  if (!limitCheck.allowed) {
+    await ctx.reply(limitCheck.message);
+    return;
+  }
+
+  const activeUser = limitCheck.user;
+
+  await ctx.reply("Generating your content pack...");
+
+  try {
+    const result = await generateContentPack({
+      platform: activeUser.platform!,
+      niche: activeUser.niche!,
+      style: activeUser.style!,
+    });
+
+    await prisma.contentPack.create({
+      data: {
+        userId: activeUser.id,
+        content: result.content,
+        model: result.model,
+        prompt: result.prompt,
+      },
+    });
+
+    await incrementDailyGenerations(activeUser.id);
+
+    await ctx.reply(result.content, {
+      reply_markup: contentPackKeyboard(),
+    });
+  } catch (error) {
+    console.error("AI generation failed:", error);
+    await ctx.reply("Sorry, I could not generate your content pack right now. Please try again in a moment.");
+  }
+});
+
+bot.command("resetlimits", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.reply("I could not read your Telegram profile.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(ctx.from.id);
+
+  if (!user) {
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      dailyGenerations: 0,
+      lastResetDate: new Date(),
+    },
+  });
+
+  await ctx.reply("Daily generation limit has been reset for this user.");
+});
+
+bot.command("saved", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.reply("I could not read your Telegram profile.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(ctx.from.id);
+
+  if (!user) {
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  const savedPacks = await prisma.contentPack.findMany({
+    where: {
+      userId: user.id,
+      saved: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 5,
+  });
+
+  if (savedPacks.length === 0) {
+    await ctx.reply("You do not have any saved content packs yet.");
+    return;
+  }
+
+  const message = savedPacks
+    .map((pack, index) => {
+      const preview =
+        pack.content.length > 700
+          ? `${pack.content.slice(0, 700)}...`
+          : pack.content;
+
+      return [
+        `${index + 1}. Saved content pack`,
+        `Created: ${pack.createdAt.toISOString().slice(0, 10)}`,
+        "",
+        preview,
+      ].join("\n");
+    })
+    .join("\n\n---\n\n");
+
+  await ctx.reply(message);
+});
+
+bot.callbackQuery("action:more_hooks", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.answerCallbackQuery("Missing Telegram profile.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(ctx.from.id);
+
+  if (!user) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  if (!user.platform || !user.niche || !user.style) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply("Your onboarding is not complete yet. Please type /start.");
+    return;
+  }
+
+  const latestPack = await prisma.contentPack.findFirst({
+    where: {
+      userId: user.id,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!latestPack) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply("Generate your first content pack with /today first.");
+    return;
+  }
+
+  const limitCheck = await checkLimit(user);
+
+  if (!limitCheck.allowed) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply(limitCheck.message);
+    return;
+  }
+
+  const activeUser = limitCheck.user;
+
+  await ctx.answerCallbackQuery("Generating more hooks...");
+  await ctx.reply("Generating 10 more hooks...");
+
+  try {
+    const hooks = await generateMoreHooks({
+      platform: activeUser.platform!,
+      niche: activeUser.niche!,
+      style: activeUser.style!,
+      previousContentPack: latestPack.content,
+    });
+
+    await incrementDailyGenerations(activeUser.id);
+
+    await ctx.reply(["10 additional hooks", "", hooks].join("\n"));
+  } catch (error) {
+    console.error("More hooks generation failed:", error);
+    await ctx.reply("Sorry, I could not generate more hooks right now. Please try again in a moment.");
+  }
+});
+
+bot.callbackQuery("action:rewrite_x", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.answerCallbackQuery("Missing Telegram profile.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(ctx.from.id);
+
+  if (!user) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  if (!user.platform || !user.niche || !user.style) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply("Your onboarding is not complete yet. Please type /start.");
+    return;
+  }
+
+  const latestPack = await prisma.contentPack.findFirst({
+    where: {
+      userId: user.id,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!latestPack) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply("Generate your first content pack with /today first.");
+    return;
+  }
+
+  const limitCheck = await checkLimit(user);
+
+  if (!limitCheck.allowed) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply(limitCheck.message);
+    return;
+  }
+
+  const activeUser = limitCheck.user;
+
+  await ctx.answerCallbackQuery("Rewriting for X...");
+  await ctx.reply("Rewriting your latest content pack for X...");
+
+  try {
+    const xRewrite = await rewriteForX({
+      platform: activeUser.platform!,
+      niche: activeUser.niche!,
+      style: activeUser.style!,
+      previousContentPack: latestPack.content,
+    });
+
+    await incrementDailyGenerations(activeUser.id);
+
+    await ctx.reply(xRewrite);
+  } catch (error) {
+    console.error("Rewrite for X failed:", error);
+    await ctx.reply("Sorry, I could not rewrite this for X right now. Please try again in a moment.");
+  }
+});
+
+bot.callbackQuery("action:make_viral", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.answerCallbackQuery("Missing Telegram profile.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(ctx.from.id);
+
+  if (!user) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  if (!user.platform || !user.niche || !user.style) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply("Your onboarding is not complete yet. Please type /start.");
+    return;
+  }
+
+  const latestPack = await prisma.contentPack.findFirst({
+    where: {
+      userId: user.id,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!latestPack) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply("Generate your first content pack with /today first.");
+    return;
+  }
+
+  const limitCheck = await checkLimit(user);
+
+  if (!limitCheck.allowed) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply(limitCheck.message);
+    return;
+  }
+
+  const activeUser = limitCheck.user;
+
+  await ctx.answerCallbackQuery("Making it viral...");
+  await ctx.reply("Making your latest content pack more viral...");
+
+  try {
+    const viralVersion = await makeItViral({
+      platform: activeUser.platform!,
+      niche: activeUser.niche!,
+      style: activeUser.style!,
+      previousContentPack: latestPack.content,
+    });
+
+    await incrementDailyGenerations(activeUser.id);
+
+    await ctx.reply(viralVersion);
+  } catch (error) {
+    console.error("Make it viral failed:", error);
+    await ctx.reply("Sorry, I could not make this more viral right now. Please try again in a moment.");
+  }
+});
+
+bot.callbackQuery("action:save_idea", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.answerCallbackQuery("Missing Telegram profile.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(ctx.from.id);
+
+  if (!user) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  const latestPack = await prisma.contentPack.findFirst({
+    where: {
+      userId: user.id,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!latestPack) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply("Generate your first content pack with /today first.");
+    return;
+  }
+
+  await prisma.contentPack.update({
+    where: {
+      id: latestPack.id,
+    },
+    data: {
+      saved: true,
+    },
+  });
+
+  await ctx.answerCallbackQuery("Saved.");
+  await ctx.reply("Saved this content pack.");
+});
+
+bot.command("profile", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.reply("I could not read your Telegram profile.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(ctx.from.id);
+
+  if (!user) {
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  await ctx.reply(
+    [
+      "Your creator profile",
+      "",
+      `Platform: ${user.platform ?? "not set"}`,
+      `Niche: ${user.niche ?? "not set"}`,
+      `Style: ${user.style ?? "not set"}`,
+      `Language: ${user.outputLanguage}`,
+      `Plan: ${user.tier}`,
+      "",
+      `AI actions used today: ${user.dailyGenerations}/${user.tier === "FREE" ? freeLimit : "unlimited"}`,
+      "",
+      "Use /settings to change your profile.",
+    ].join("\n")
+  );
+});
+
+bot.command("settings", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.reply("I could not read your Telegram profile.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(ctx.from.id);
+
+  if (!user) {
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  const keyboard = new InlineKeyboard()
+    .text("Change platform", "settings:platform")
+    .row()
+    .text("Change niche", "settings:niche")
+    .row()
+    .text("Change style", "settings:style")
+    .row()
+    .text("Show profile", "settings:profile");
+
+  await ctx.reply(
+    [
+      "Settings",
+      "",
+      `Current platform: ${user.platform ?? "not set"}`,
+      `Current niche: ${user.niche ?? "not set"}`,
+      `Current style: ${user.style ?? "not set"}`,
+      "",
+      "What do you want to change?",
+    ].join("\n"),
+    {
+      reply_markup: keyboard,
+    }
+  );
+});
+
+bot.callbackQuery("settings:profile", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.answerCallbackQuery("Missing Telegram profile.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(ctx.from.id);
+
+  if (!user) {
+    await ctx.answerCallbackQuery();
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  await ctx.answerCallbackQuery();
+
+  await ctx.reply(
+    [
+      "Your creator profile",
+      "",
+      `Platform: ${user.platform ?? "not set"}`,
+      `Niche: ${user.niche ?? "not set"}`,
+      `Style: ${user.style ?? "not set"}`,
+      `Language: ${user.outputLanguage}`,
+      `Plan: ${user.tier}`,
+      "",
+      `AI actions used today: ${user.dailyGenerations}/${user.tier === "FREE" ? freeLimit : "unlimited"}`,
+    ].join("\n")
+  );
+});
+
+bot.callbackQuery("settings:platform", async (ctx) => {
+  const keyboard = new InlineKeyboard()
+    .text("X", "set_platform:X")
+    .text("TikTok", "set_platform:TIKTOK")
+    .row()
+    .text("Instagram Reels", "set_platform:INSTAGRAM_REELS")
+    .row()
+    .text("YouTube Shorts", "set_platform:YOUTUBE_SHORTS")
+    .text("Multi", "set_platform:MULTI");
+
+  await ctx.answerCallbackQuery();
+  await ctx.reply("Choose your new main platform:", {
+    reply_markup: keyboard,
+  });
+});
+
+bot.callbackQuery("settings:niche", async (ctx) => {
+  const keyboard = new InlineKeyboard()
+    .text("Bitcoin", "set_niche:BITCOIN")
+    .text("Crypto Trading", "set_niche:CRYPTO_TRADING")
+    .row()
+    .text("DeFi", "set_niche:DEFI")
+    .text("Macro", "set_niche:MACRO")
+    .row()
+    .text("Stocks", "set_niche:STOCKS")
+    .text("Personal Finance", "set_niche:PERSONAL_FINANCE")
+    .row()
+    .text("Other", "set_niche:OTHER");
+
+  await ctx.answerCallbackQuery();
+  await ctx.reply("Choose your new niche:", {
+    reply_markup: keyboard,
+  });
+});
+
+bot.callbackQuery("settings:style", async (ctx) => {
+  const keyboard = new InlineKeyboard()
+    .text("Educational", "set_style:EDUCATIONAL")
+    .text("Contrarian", "set_style:CONTRARIAN")
+    .row()
+    .text("Storytelling", "set_style:STORYTELLING")
+    .text("Data-driven", "set_style:DATA_DRIVEN")
+    .row()
+    .text("Meme / Viral", "set_style:MEME_VIRAL")
+    .row()
+    .text("Founder Brand", "set_style:FOUNDER_BRAND");
+
+  await ctx.answerCallbackQuery();
+  await ctx.reply("Choose your new content style:", {
+    reply_markup: keyboard,
+  });
+});
+
+bot.callbackQuery(/^set_platform:/, async (ctx) => {
+  if (!ctx.from) {
+    await ctx.answerCallbackQuery("Missing Telegram profile.");
+    return;
+  }
+
+  const platform = ctx.callbackQuery.data.replace("set_platform:", "");
+
+  await prisma.user.update({
+    where: {
+      telegramId: BigInt(ctx.from.id),
+    },
+    data: {
+      platform: platform as any,
+      state: "ACTIVE",
+    },
+  });
+
+  await ctx.answerCallbackQuery("Platform updated.");
+  await ctx.reply(`Platform updated to: ${platform}`);
+});
+
+bot.callbackQuery(/^set_niche:/, async (ctx) => {
+  if (!ctx.from) {
+    await ctx.answerCallbackQuery("Missing Telegram profile.");
+    return;
+  }
+
+  const niche = ctx.callbackQuery.data.replace("set_niche:", "");
+
+  await prisma.user.update({
+    where: {
+      telegramId: BigInt(ctx.from.id),
+    },
+    data: {
+      niche: niche as any,
+      state: "ACTIVE",
+    },
+  });
+
+  await ctx.answerCallbackQuery("Niche updated.");
+  await ctx.reply(`Niche updated to: ${niche}`);
+});
+
+bot.callbackQuery(/^set_style:/, async (ctx) => {
+  if (!ctx.from) {
+    await ctx.answerCallbackQuery("Missing Telegram profile.");
+    return;
+  }
+
+  const style = ctx.callbackQuery.data.replace("set_style:", "");
+
+  await prisma.user.update({
+    where: {
+      telegramId: BigInt(ctx.from.id),
+    },
+    data: {
+      style: style as any,
+      state: "ACTIVE",
+    },
+  });
+
+  await ctx.answerCallbackQuery("Style updated.");
+  await ctx.reply(`Style updated to: ${style}`);
+});
+
+bot.command("pushhour", async (ctx) => {
+  console.log("Received /pushhour command");
+
+  if (!ctx.from) {
+    await ctx.reply("I could not read your Telegram profile.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(ctx.from.id);
+
+  if (!user) {
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  const text = ctx.message?.text ?? "";
+  const rawHour = text.split(/\s+/)[1];
+
+  if (!rawHour) {
+    await ctx.reply(
+      [
+        "Usage:",
+        "/pushhour 8",
+        "",
+        "This sets your automatic daily content pack hour in UTC.",
+        "",
+        `Current push hour: ${user.pushHour}:00 UTC`,
+      ].join("\n")
+    );
+    return;
+  }
+
+  const hour = Number(rawHour);
+
+  if (!Number.isInteger(hour) || hour < 0 || hour > 23) {
+    await ctx.reply("Please provide a valid UTC hour between 0 and 23. Example: /pushhour 8");
+    return;
+  }
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      pushHour: hour,
+    },
+  });
+
+  await ctx.reply(`Daily push hour updated to ${hour}:00 UTC.`);
+});
+
+bot.command("help", async (ctx) => {
+  await ctx.reply(
+    [
+      "Crypto Content Copilot - help",
+      "",
+      "Commands:",
+      "",
+      "/start - setup your creator profile",
+      "/today - generate today's content pack",
+      "/saved - show your saved content packs",
+      "/profile - show your creator profile",
+      "/settings - change platform, niche or style",
+      "/pushhour - set automatic daily push hour in UTC",
+      "/help - show this help message",
+      "",
+      "Buttons after /today:",
+      "",
+      "More hooks - generate 10 additional hooks",
+      "Rewrite for X - turn the pack into an X post and thread",
+      "Make it viral - create a sharper viral version",
+      "Save idea - save the latest content pack",
+      "",
+      "Free plan:",
+      "3 AI actions per day.",
+      "",
+      "Important:",
+      "This bot creates educational crypto and finance content.",
+      "It does not provide financial advice, buy/sell signals, leverage guidance, or guaranteed outcomes.",
+    ].join("\n")
+  );
+});
+
+bot.command("myid", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.reply("I could not read your Telegram profile.");
+    return;
+  }
+
+  await ctx.reply(
+    [
+      "Your Telegram ID:",
+      "",
+      String(ctx.from.id),
+      "",
+      "Use this as ADMIN_TELEGRAM_ID in your .env file if you want admin commands.",
+    ].join("\n")
+  );
+});
+
+bot.command("plan", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.reply("I could not read your Telegram profile.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(ctx.from.id);
+
+  if (!user) {
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  const dailyLimitText = user.tier === "FREE" ? `${freeLimit} AI actions/day` : "Unlimited AI actions/day for MVP testing";
+
+  await ctx.reply(
+    [
+      "Your plan",
+      "",
+      `Current plan: ${user.tier}`,
+      `Usage today: ${user.dailyGenerations}/${user.tier === "FREE" ? freeLimit : "unlimited"}`,
+      "",
+      "FREE includes:",
+      "- 3 AI actions per day",
+      "- /today content pack",
+      "- More hooks",
+      "- Rewrite for X",
+      "- Make it viral",
+      "- Save idea",
+      "",
+      "PRO will include:",
+      "- More daily AI generations",
+      "- Daily automatic content push",
+      "- More saved ideas",
+      "- More creator formats",
+      "- Priority features",
+      "",
+      `Current limit: ${dailyLimitText}`,
+      "",
+      "Payments are not connected yet. PRO can currently be enabled manually by admin for testing.",
+    ].join("\n")
+  );
+});
+
+bot.command("admin_pro", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.reply("I could not read your Telegram profile.");
+    return;
+  }
+
+  const adminTelegramId = process.env.ADMIN_TELEGRAM_ID;
+
+  if (!adminTelegramId) {
+    await ctx.reply(
+      [
+        "ADMIN_TELEGRAM_ID is not set.",
+        "",
+        "Step 1: type /myid",
+        "Step 2: copy your Telegram ID",
+        "Step 3: add this to .env:",
+        "",
+        'ADMIN_TELEGRAM_ID="your_id_here"',
+        "",
+        "Step 4: restart the bot",
+      ].join("\n")
+    );
+    return;
+  }
+
+  if (String(ctx.from.id) !== adminTelegramId) {
+    await ctx.reply("You are not allowed to use this admin command.");
+    return;
+  }
+
+  const text = ctx.message?.text ?? "";
+  const targetTelegramId = text.split(/\s+/)[1];
+
+  if (!targetTelegramId) {
+    await ctx.reply(
+      [
+        "Usage:",
+        "/admin_pro 123456789",
+        "",
+        "This upgrades a Telegram user to PRO manually.",
+      ].join("\n")
+    );
+    return;
+  }
+
+  const targetIdBigInt = BigInt(targetTelegramId);
+
+  const targetUser = await prisma.user.findUnique({
+    where: {
+      telegramId: targetIdBigInt,
+    },
+  });
+
+  if (!targetUser) {
+    await ctx.reply("User not found. The user must start the bot first with /start.");
+    return;
+  }
+
+  await prisma.user.update({
+    where: {
+      id: targetUser.id,
+    },
+    data: {
+      tier: "PRO",
+    },
+  });
+
+  await ctx.reply(`User ${targetTelegramId} upgraded to PRO.`);
+});
+
+bot.command("status", async (ctx) => {
+  const startedAtSecondsAgo = Math.floor(process.uptime());
+
+  let dbStatus = "OK";
+  let openAiStatus = "OK";
+
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+  } catch (error) {
+    dbStatus = "ERROR";
+    console.error("Status check DB failed:", error);
+  }
+
+  try {
+    const { openai } = await import("../ai/openai.js");
+    await openai.models.list();
+  } catch (error) {
+    openAiStatus = "ERROR";
+    console.error("Status check OpenAI failed:", error);
+  }
+
+  await ctx.reply(
+    [
+      "System status",
+      "",
+      `Bot: OK`,
+      `Database: ${dbStatus}`,
+      `OpenAI: ${openAiStatus}`,
+      `Environment: ${process.env.NODE_ENV ?? "development"}`,
+      `Uptime: ${startedAtSecondsAgo} seconds`,
+      "",
+      dbStatus === "OK" && openAiStatus === "OK"
+        ? "Everything looks healthy."
+        : "One or more systems have a problem. Check the terminal logs.",
+    ].join("\n")
+  );
+});
+
+bot.command("examples", async (ctx) => {
+  await ctx.reply(
+    [
+      "Example content pack",
+      "",
+      "Niche: Bitcoin",
+      "Style: Educational",
+      "Platform: X",
+      "",
+      "1. Market/content angle of the day",
+      "Most people watch Bitcoin price. Better creators explain Bitcoin behavior.",
+      "",
+      "2. 5 hooks",
+      "- Bitcoin is not hard to understand. It is hard to explain simply.",
+      "- Most crypto content fails because it starts with price, not context.",
+      "- The best Bitcoin creators do not predict. They translate.",
+      "- If your Bitcoin content sounds like everyone else's, this is why.",
+      "- A simple Bitcoin framework your audience will actually remember.",
+      "",
+      "3. 3 short-form ideas",
+      "- Explain Bitcoin using one simple analogy.",
+      "- Break down why volatility creates attention but not trust.",
+      "- Show how to turn market confusion into educational content.",
+      "",
+      "4. Script",
+      "Most people think Bitcoin content has to predict the next move. It does not. The better angle is to explain what people are already feeling: confusion, fear, greed, or doubt. If you can translate market noise into simple lessons, your audience will come back even when your predictions are absent.",
+      "",
+      "5. X post",
+      "Crypto creators do not need more predictions. They need better explanations. Price gets attention. Clarity builds trust.",
+      "",
+      "6. CTA",
+      "Save this if you want to create better Bitcoin content without making price calls.",
+      "",
+      "Use /today to generate your own pack.",
+    ].join("\n")
+  );
+});
+
+bot.command("feedback", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.reply("I could not read your Telegram profile.");
+    return;
+  }
+
+  const text = ctx.message?.text ?? "";
+  const feedback = text.replace(/^\/feedback(@\w+)?\s*/i, "").trim();
+
+  if (!feedback) {
+    await ctx.reply(
+      [
+        "Usage:",
+        "/feedback your message here",
+        "",
+        "Example:",
+        "/feedback I want better TikTok scripts",
+      ].join("\n")
+    );
+    return;
+  }
+
+  const adminTelegramId = process.env.ADMIN_TELEGRAM_ID;
+
+  if (!adminTelegramId) {
+    console.log("Feedback received but ADMIN_TELEGRAM_ID is not set:", {
+      from: ctx.from.id,
+      username: ctx.from.username,
+      feedback,
+    });
+
+    await ctx.reply("Thanks. Your feedback was received.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(ctx.from.id);
+
+  await ctx.api.sendMessage(
+    adminTelegramId,
+    [
+      "New feedback",
+      "",
+      `From Telegram ID: ${ctx.from.id}`,
+      `Username: ${ctx.from.username ? "@" + ctx.from.username : "none"}`,
+      `First name: ${ctx.from.first_name ?? "none"}`,
+      "",
+      user
+        ? [
+            "User profile:",
+            `Plan: ${user.tier}`,
+            `Platform: ${user.platform ?? "not set"}`,
+            `Niche: ${user.niche ?? "not set"}`,
+            `Style: ${user.style ?? "not set"}`,
+          ].join("\n")
+        : "User profile: not found in database",
+      "",
+      "Feedback:",
+      feedback,
+    ].join("\n")
+  );
+
+  await ctx.reply("Thanks. Your feedback was sent.");
+});

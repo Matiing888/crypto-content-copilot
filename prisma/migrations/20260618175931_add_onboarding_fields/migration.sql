@@ -1,0 +1,16 @@
+-- CreateEnum
+CREATE TYPE "Platform" AS ENUM ('X', 'TIKTOK', 'INSTAGRAM_REELS', 'YOUTUBE_SHORTS', 'MULTI');
+
+-- CreateEnum
+CREATE TYPE "Niche" AS ENUM ('BITCOIN', 'CRYPTO_TRADING', 'DEFI', 'MACRO', 'STOCKS', 'PERSONAL_FINANCE', 'OTHER');
+
+-- CreateEnum
+CREATE TYPE "ContentStyle" AS ENUM ('EDUCATIONAL', 'CONTRARIAN', 'STORYTELLING', 'DATA_DRIVEN', 'MEME_VIRAL', 'FOUNDER_BRAND');
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "niche" "Niche",
+ADD COLUMN     "outputLanguage" TEXT NOT NULL DEFAULT 'en',
+ADD COLUMN     "platform" "Platform",
+ADD COLUMN     "pushHour" INTEGER NOT NULL DEFAULT 8,
+ADD COLUMN     "style" "ContentStyle",
+ADD COLUMN     "timezone" TEXT NOT NULL DEFAULT 'UTC';

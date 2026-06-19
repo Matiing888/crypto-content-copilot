@@ -1,0 +1,98 @@
+const fs = require("fs");
+
+const schema = String.raw`generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserState {
+  ONBOARDING
+  ACTIVE
+  PAUSED
+  CHURNED
+}
+
+enum SubscriptionTier {
+  FREE
+  PRO
+  CREATOR
+}
+
+enum Platform {
+  X
+  TIKTOK
+  INSTAGRAM_REELS
+  YOUTUBE_SHORTS
+  MULTI
+}
+
+enum Niche {
+  BITCOIN
+  CRYPTO_TRADING
+  DEFI
+  MACRO
+  STOCKS
+  PERSONAL_FINANCE
+  OTHER
+}
+
+enum ContentStyle {
+  EDUCATIONAL
+  CONTRARIAN
+  STORYTELLING
+  DATA_DRIVEN
+  MEME_VIRAL
+  FOUNDER_BRAND
+}
+
+model User {
+  id               String           @id @default(cuid())
+  telegramId       BigInt           @unique
+  username         String?
+  firstName        String?
+  state            UserState        @default(ONBOARDING)
+  tier             SubscriptionTier @default(FREE)
+
+  platform         Platform?
+  niche            Niche?
+  style            ContentStyle?
+
+  timezone         String           @default("UTC")
+  pushHour         Int              @default(8)
+  outputLanguage   String           @default("en")
+
+  dailyGenerations Int              @default(0)
+  lastResetDate    DateTime         @default(now())
+
+  contentPacks     ContentPack[]
+
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([telegramId])
+  @@index([state, tier])
+}
+
+model ContentPack {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  content   String   @db.Text
+  model     String
+  prompt    String   @db.Text
+  saved     Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([userId, saved])
+}
+`;
+
+fs.writeFileSync("prisma/schema.prisma", schema, "utf8");
+console.log("schema.prisma fixed");
