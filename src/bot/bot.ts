@@ -317,7 +317,7 @@ bot.command("today", async (ctx) => {
   }
 
   if (!user.platform || !user.niche || !user.style) {
-    await ctx.reply("Your onboarding is not complete yet. Please type /start.");
+    await ctx.reply("Your creator profile is not complete yet. Use /start to finish setup.");
     return;
   }
 
@@ -330,7 +330,7 @@ bot.command("today", async (ctx) => {
 
   const activeUser = limitCheck.user;
 
-  await ctx.reply("Creating today's content pack...");
+  await ctx.reply("Building today's content pack...");
 
   try {
     const result = await generateContentPack({
@@ -365,7 +365,7 @@ bot.command("today", async (ctx) => {
     });
   } catch (error) {
     console.error("AI generation failed:", error);
-    await ctx.reply("Sorry, I could not generate your content pack right now. Please try again in a moment.");
+    await ctx.reply("I could not generate your content pack right now. Please try again in a moment.");
   }
 });
 
@@ -378,7 +378,7 @@ bot.command("resetlimits", async (ctx) => {
   const adminTelegramId = process.env.ADMIN_TELEGRAM_ID;
 
   if (!adminTelegramId || String(ctx.from.id) !== adminTelegramId) {
-    await ctx.reply("You are not allowed to use this command.");
+    await ctx.reply("Command not available.");
     return;
   }
 
@@ -431,7 +431,7 @@ bot.command("saved", async (ctx) => {
       [
         "No saved content packs yet.",
         "",
-        "Generate a pack with /today, then tap Save idea.",
+        "Generate a pack with /today, then tap Save pack.",
       ].join("\n")
     );
     return;
@@ -453,7 +453,7 @@ bot.command("saved", async (ctx) => {
     })
     .join("\n\n---\n\n");
 
-  await ctx.reply(["Your saved content packs", "", message].join("\n"));
+  await ctx.reply(["Saved content packs", "", message].join("\n"));
 });
 
 bot.callbackQuery("action:more_hooks", async (ctx) => {
@@ -472,7 +472,7 @@ bot.callbackQuery("action:more_hooks", async (ctx) => {
 
   if (!user.platform || !user.niche || !user.style) {
     await ctx.answerCallbackQuery();
-    await ctx.reply("Your onboarding is not complete yet. Please type /start.");
+    await ctx.reply("Your creator profile is not complete yet. Use /start to finish setup.");
     return;
   }
 
@@ -487,7 +487,7 @@ bot.callbackQuery("action:more_hooks", async (ctx) => {
 
   if (!latestPack) {
     await ctx.answerCallbackQuery();
-    await ctx.reply("Generate your first content pack with /today first.");
+    await ctx.reply("Generate a content pack with /today first. Then you can use this action.");
     return;
   }
 
@@ -502,7 +502,7 @@ bot.callbackQuery("action:more_hooks", async (ctx) => {
   const activeUser = limitCheck.user;
 
   await ctx.answerCallbackQuery("Generating more hooks...");
-  await ctx.reply("Generating 10 more hooks...");
+  await ctx.reply("Creating 10 extra hooks from your latest content pack...");
 
   try {
     const hooks = await generateMoreHooks({
@@ -514,7 +514,7 @@ bot.callbackQuery("action:more_hooks", async (ctx) => {
 
     await incrementDailyGenerations(activeUser.id);
 
-    await ctx.reply(["10 additional hooks", "", hooks].join("\n"));
+    await ctx.reply(["10 extra hooks", "", hooks].join("\n"));
   } catch (error) {
     console.error("More hooks generation failed:", error);
     await ctx.reply("Sorry, I could not generate more hooks right now. Please try again in a moment.");
@@ -537,7 +537,7 @@ bot.callbackQuery("action:rewrite_x", async (ctx) => {
 
   if (!user.platform || !user.niche || !user.style) {
     await ctx.answerCallbackQuery();
-    await ctx.reply("Your onboarding is not complete yet. Please type /start.");
+    await ctx.reply("Your creator profile is not complete yet. Use /start to finish setup.");
     return;
   }
 
@@ -552,7 +552,7 @@ bot.callbackQuery("action:rewrite_x", async (ctx) => {
 
   if (!latestPack) {
     await ctx.answerCallbackQuery();
-    await ctx.reply("Generate your first content pack with /today first.");
+    await ctx.reply("Generate a content pack with /today first. Then you can use this action.");
     return;
   }
 
@@ -602,7 +602,7 @@ bot.callbackQuery("action:make_viral", async (ctx) => {
 
   if (!user.platform || !user.niche || !user.style) {
     await ctx.answerCallbackQuery();
-    await ctx.reply("Your onboarding is not complete yet. Please type /start.");
+    await ctx.reply("Your creator profile is not complete yet. Use /start to finish setup.");
     return;
   }
 
@@ -617,7 +617,7 @@ bot.callbackQuery("action:make_viral", async (ctx) => {
 
   if (!latestPack) {
     await ctx.answerCallbackQuery();
-    await ctx.reply("Generate your first content pack with /today first.");
+    await ctx.reply("Generate a content pack with /today first. Then you can use this action.");
     return;
   }
 
@@ -632,7 +632,7 @@ bot.callbackQuery("action:make_viral", async (ctx) => {
   const activeUser = limitCheck.user;
 
   await ctx.answerCallbackQuery("Making it viral...");
-  await ctx.reply("Making your latest content pack more viral...");
+  await ctx.reply("Creating a more viral angle from your latest content pack...");
 
   try {
     const viralVersion = await makeItViral({
@@ -676,7 +676,7 @@ bot.callbackQuery("action:save_idea", async (ctx) => {
 
   if (!latestPack) {
     await ctx.answerCallbackQuery();
-    await ctx.reply("Generate your first content pack with /today first.");
+    await ctx.reply("Generate a content pack with /today first. Then you can use this action.");
     return;
   }
 
@@ -690,7 +690,7 @@ bot.callbackQuery("action:save_idea", async (ctx) => {
   });
 
   await ctx.answerCallbackQuery("Saved.");
-  await ctx.reply("Saved this content pack.");
+  await ctx.reply("Saved. You can find it anytime with /saved.");
 });
 
 bot.command("profile", async (ctx) => {
@@ -738,11 +738,11 @@ bot.command("settings", async (ctx) => {
   }
 
   const keyboard = new InlineKeyboard()
-    .text("Change platform", "settings:platform")
+    .text("Platform", "settings:platform")
     .row()
-    .text("Change niche", "settings:niche")
+    .text("Niche", "settings:niche")
     .row()
-    .text("Change style", "settings:style")
+    .text("Style", "settings:style")
     .row()
     .text("Show profile", "settings:profile");
 
@@ -866,7 +866,7 @@ bot.callbackQuery(/^set_platform:/, async (ctx) => {
   });
 
   await ctx.answerCallbackQuery("Platform updated.");
-  await ctx.reply(`Platform updated to: ${platform}`);
+  await ctx.reply(`Platform updated to: ${formatEnumLabel(platform)}`);
 });
 
 bot.callbackQuery(/^set_niche:/, async (ctx) => {
@@ -888,7 +888,7 @@ bot.callbackQuery(/^set_niche:/, async (ctx) => {
   });
 
   await ctx.answerCallbackQuery("Niche updated.");
-  await ctx.reply(`Niche updated to: ${niche}`);
+  await ctx.reply(`Niche updated to: ${formatEnumLabel(niche)}`);
 });
 
 bot.callbackQuery(/^set_style:/, async (ctx) => {
@@ -910,7 +910,7 @@ bot.callbackQuery(/^set_style:/, async (ctx) => {
   });
 
   await ctx.answerCallbackQuery("Style updated.");
-  await ctx.reply(`Style updated to: ${style}`);
+  await ctx.reply(`Style updated to: ${formatEnumLabel(style)}`);
 });
 
 bot.command("pushhour", async (ctx) => {
@@ -979,6 +979,7 @@ bot.command("pushhour", async (ctx) => {
     [
       `Daily push hour updated to ${hour}:00 UTC.`,
       "",
+      "You will receive your daily content prompt around this hour.",
       "You can change it anytime with /pushhour.",
     ].join("\n")
   );
@@ -1015,7 +1016,7 @@ bot.command("help", async (ctx) => {
       "3 AI actions per day.",
       "",
       "PRO:",
-      "More AI usage, daily content push, and more creator workflow features during MVP.",
+      "More AI usage, automatic daily prompts, more saved ideas and priority access during the MVP.",
       "",
       "Reminder:",
       "This bot creates educational crypto and finance content.",
@@ -1172,7 +1173,14 @@ bot.command("billing", async (ctx) => {
   }
 
   if (!user.stripeCustomerId) {
-    await ctx.reply("No Stripe customer found yet. Use /upgrade first.");
+    await ctx.reply(
+      [
+        "No billing account found yet.",
+        "",
+        "Use /upgrade first to start PRO.",
+        "After that, /billing will open your Stripe customer portal.",
+      ].join("\n")
+    );
     return;
   }
 
@@ -1221,18 +1229,18 @@ bot.command("plan", async (ctx) => {
       "",
       user.tier === "PRO"
         ? "You have PRO access. Use /billing to manage or cancel your subscription."
-        : "You are on the FREE plan. Use /upgrade to unlock PRO.",
+        : "You are on FREE. Use /upgrade when you want more AI usage and daily content prompts.",
       "",
       "FREE:",
       "- 3 AI actions per day",
       "- /today content pack",
       "- More hooks",
       "- Rewrite for X",
-      "- Make it viral",
-      "- Save idea",
+      "- Viral angle",
+      "- Save pack",
       "",
       "PRO:",
-      "- more AI usage during MVP",
+      "- more AI usage during the MVP",
       "- automatic daily content prompts",
       "- more saved ideas",
       "- more creator formats",
@@ -1367,7 +1375,7 @@ bot.command("admin_free", async (ctx) => {
     },
   });
 
-  await ctx.reply(`User ${targetTelegramId} downgraded to FREE and Stripe data cleared.`);
+  await ctx.reply(`User ${targetTelegramId} downgraded to FREE and Stripe subscription data cleared.`);
 });
 bot.command("status", async (ctx) => {
   const startedAtSecondsAgo = Math.floor(process.uptime());
@@ -1512,7 +1520,7 @@ bot.command("feedback", async (ctx) => {
     [
       "Thanks. Your feedback was sent.",
       "",
-      "This helps improve the MVP.",
+      "This helps improve Crypto Content Copilot.",
     ].join("\n")
   );
 });
