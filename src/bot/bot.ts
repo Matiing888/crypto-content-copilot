@@ -385,7 +385,13 @@ bot.command("saved", async (ctx) => {
   });
 
   if (savedPacks.length === 0) {
-    await ctx.reply("You do not have any saved content packs yet.");
+    await ctx.reply(
+      [
+        "No saved content packs yet.",
+        "",
+        "Generate a pack with /today, then tap Save idea.",
+      ].join("\n")
+    );
     return;
   }
 
@@ -405,7 +411,7 @@ bot.command("saved", async (ctx) => {
     })
     .join("\n\n---\n\n");
 
-  await ctx.reply(message);
+  await ctx.reply(["Your saved content packs", "", message].join("\n"));
 });
 
 bot.callbackQuery("action:more_hooks", async (ctx) => {
