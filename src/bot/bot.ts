@@ -353,7 +353,7 @@ bot.command("today", async (ctx) => {
     const formattedContent = [
       "Today's content pack",
       "",
-      `Creator setup: ${formatEnumLabel(activeUser.platform)} � ${formatEnumLabel(activeUser.niche)} � ${formatEnumLabel(activeUser.style)}`,
+      `Creator setup: ${formatEnumLabel(activeUser.platform)} | ${formatEnumLabel(activeUser.niche)} | ${formatEnumLabel(activeUser.style)}`,
       "",
       result.content,
       "",
