@@ -1136,12 +1136,16 @@ bot.command("plan", async (ctx) => {
 
   await ctx.reply(
     [
-      "Your plan",
+      `Your plan: ${user.tier}`,
       "",
-      `Current plan: ${user.tier}`,
       `Usage today: ${user.dailyGenerations}/${user.tier === "FREE" ? freeLimit : "unlimited"}`,
+      `Current limit: ${dailyLimitText}`,
       "",
-      "FREE includes:",
+      user.tier === "PRO"
+        ? "You have PRO access. Use /billing to manage or cancel your subscription."
+        : "You are on the FREE plan. Use /upgrade to unlock PRO.",
+      "",
+      "FREE:",
       "- 3 AI actions per day",
       "- /today content pack",
       "- More hooks",
@@ -1149,18 +1153,12 @@ bot.command("plan", async (ctx) => {
       "- Make it viral",
       "- Save idea",
       "",
-      "PRO will include:",
-      "- More daily AI generations",
-      "- Daily automatic content push",
-      "- More saved ideas",
-      "- More creator formats",
-      "- Priority features",
-      "",
-      `Current limit: ${dailyLimitText}`,
-      "",
-      "Payments are active.",
-      "Use /upgrade to subscribe to PRO.",
-      "Use /billing to manage your subscription.",
+      "PRO:",
+      "- more AI usage during MVP",
+      "- automatic daily content prompts",
+      "- more saved ideas",
+      "- more creator formats",
+      "- priority access to new features",
     ].join("\n")
   );
 });
