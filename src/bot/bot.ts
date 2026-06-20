@@ -8,6 +8,38 @@ export const bot = new Bot(env.botToken);
 
 const freeLimit = 3;
 
+
+function formatEnumLabel(value: string | null | undefined) {
+  if (!value) {
+    return "not set";
+  }
+
+  const labels: Record<string, string> = {
+    X: "X",
+    TIKTOK: "TikTok",
+    INSTAGRAM_REELS: "Instagram Reels",
+    YOUTUBE_SHORTS: "YouTube Shorts",
+    MULTI: "Multi",
+
+    BITCOIN: "Bitcoin",
+    CRYPTO_TRADING: "Crypto Trading",
+    DEFI: "DeFi",
+    MACRO: "Macro",
+    STOCKS: "Stocks",
+    PERSONAL_FINANCE: "Personal Finance",
+    OTHER: "Other",
+
+    EDUCATIONAL: "Educational",
+    CONTRARIAN: "Contrarian",
+    STORYTELLING: "Storytelling",
+    DATA_DRIVEN: "Data-driven",
+    MEME_VIRAL: "Meme / Viral",
+    FOUNDER_BRAND: "Founder Brand",
+  };
+
+  return labels[value] ?? value;
+}
+
 async function getUserByTelegramId(telegramId: number) {
   return prisma.user.findUnique({
     where: {
@@ -668,9 +700,9 @@ bot.command("profile", async (ctx) => {
     [
       "Your creator profile",
       "",
-      `Platform: ${user.platform ?? "not set"}`,
-      `Niche: ${user.niche ?? "not set"}`,
-      `Style: ${user.style ?? "not set"}`,
+      `Platform: ${formatEnumLabel(user.platform)}`,
+      `Niche: ${formatEnumLabel(user.niche)}`,
+      `Style: ${formatEnumLabel(user.style)}`,
       `Language: ${user.outputLanguage}`,
       `Plan: ${user.tier}`,
       "",
@@ -709,9 +741,9 @@ bot.command("settings", async (ctx) => {
       "Creator settings",
       "",
       "Current profile:",
-      `Platform: ${user.platform ?? "not set"}`,
-      `Niche: ${user.niche ?? "not set"}`,
-      `Style: ${user.style ?? "not set"}`,
+      `Platform: ${formatEnumLabel(user.platform)}`,
+      `Niche: ${formatEnumLabel(user.niche)}`,
+      `Style: ${formatEnumLabel(user.style)}`,
       "",
       "Choose what you want to update:",
     ].join("\n"),
@@ -741,9 +773,9 @@ bot.callbackQuery("settings:profile", async (ctx) => {
     [
       "Your creator profile",
       "",
-      `Platform: ${user.platform ?? "not set"}`,
-      `Niche: ${user.niche ?? "not set"}`,
-      `Style: ${user.style ?? "not set"}`,
+      `Platform: ${formatEnumLabel(user.platform)}`,
+      `Niche: ${formatEnumLabel(user.niche)}`,
+      `Style: ${formatEnumLabel(user.style)}`,
       `Language: ${user.outputLanguage}`,
       `Plan: ${user.tier}`,
       "",
@@ -1448,9 +1480,9 @@ bot.command("feedback", async (ctx) => {
         ? [
             "User profile:",
             `Plan: ${user.tier}`,
-            `Platform: ${user.platform ?? "not set"}`,
-            `Niche: ${user.niche ?? "not set"}`,
-            `Style: ${user.style ?? "not set"}`,
+            `Platform: ${formatEnumLabel(user.platform)}`,
+            `Niche: ${formatEnumLabel(user.niche)}`,
+            `Style: ${formatEnumLabel(user.style)}`,
           ].join("\n")
         : "User profile: not found in database",
       "",
@@ -1591,9 +1623,9 @@ bot.command("admin_users", async (ctx) => {
         `First name: ${user.firstName ?? "none"}`,
         `State: ${user.state}`,
         `Tier: ${user.tier}`,
-        `Platform: ${user.platform ?? "not set"}`,
-        `Niche: ${user.niche ?? "not set"}`,
-        `Style: ${user.style ?? "not set"}`,
+        `Platform: ${formatEnumLabel(user.platform)}`,
+        `Niche: ${formatEnumLabel(user.niche)}`,
+        `Style: ${formatEnumLabel(user.style)}`,
         `AI actions today: ${user.dailyGenerations}`,
         `Created: ${user.createdAt.toISOString().slice(0, 10)}`,
       ].join("\n");
