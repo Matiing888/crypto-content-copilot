@@ -1034,16 +1034,21 @@ bot.command("upgrade", async (ctx) => {
     return;
   }
 
+  const keyboard = new InlineKeyboard().url("Pay with Stripe", session.url);
+
   await ctx.reply(
     [
-      "Upgrade to Crypto Content Copilot PRO:",
+      "Upgrade to Crypto Content Copilot PRO",
       "",
       "PRO: 9 EUR / month",
       "",
-      session.url,
+      "Tap the button below to open Stripe Checkout.",
       "",
       "After payment, your PRO plan will be activated automatically once Stripe confirms the subscription.",
-    ].join("\n")
+    ].join("\n"),
+    {
+      reply_markup: keyboard,
+    }
   );
 });
 
