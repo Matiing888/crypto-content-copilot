@@ -1125,7 +1125,9 @@ bot.command("plan", async (ctx) => {
       "",
       `Current limit: ${dailyLimitText}`,
       "",
-      "Payments are not connected yet. PRO can currently be enabled manually by admin for testing.",
+      "Payments are active.",
+      "Use /upgrade to subscribe to PRO.",
+      "Use /billing to manage your subscription.",
     ].join("\n")
   );
 });
