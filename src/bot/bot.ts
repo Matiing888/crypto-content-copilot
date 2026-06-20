@@ -1097,9 +1097,16 @@ bot.command("billing", async (ctx) => {
 
   await ctx.reply(
     [
-      "Manage your subscription here:",
+      "Manage your Crypto Content Copilot subscription:",
       "",
       session.url,
+      "",
+      "Inside Stripe you can:",
+      "- update your payment method",
+      "- view your subscription",
+      "- cancel your PRO plan",
+      "",
+      "After cancellation, Stripe will send the update automatically.",
     ].join("\n")
   );
 });
