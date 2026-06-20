@@ -886,10 +886,17 @@ bot.command("pushhour", async (ctx) => {
   if (!rawHour) {
     await ctx.reply(
       [
-        "Usage:",
+        "Set your daily content push hour",
+        "",
+        "Use:",
         "/pushhour 8",
         "",
-        "This sets your automatic daily content pack hour in UTC.",
+        "This means the bot will send your daily content prompt at 08:00 UTC.",
+        "",
+        "Examples:",
+        "/pushhour 7 - morning UTC",
+        "/pushhour 12 - midday UTC",
+        "/pushhour 18 - evening UTC",
         "",
         `Current push hour: ${user.pushHour}:00 UTC`,
       ].join("\n")
@@ -900,7 +907,14 @@ bot.command("pushhour", async (ctx) => {
   const hour = Number(rawHour);
 
   if (!Number.isInteger(hour) || hour < 0 || hour > 23) {
-    await ctx.reply("Please provide a valid UTC hour between 0 and 23. Example: /pushhour 8");
+    await ctx.reply(
+      [
+        "Please send a valid UTC hour between 0 and 23.",
+        "",
+        "Example:",
+        "/pushhour 8",
+      ].join("\n")
+    );
     return;
   }
 
@@ -913,7 +927,13 @@ bot.command("pushhour", async (ctx) => {
     },
   });
 
-  await ctx.reply(`Daily push hour updated to ${hour}:00 UTC.`);
+  await ctx.reply(
+    [
+      `Daily push hour updated to ${hour}:00 UTC.`,
+      "",
+      "You can change it anytime with /pushhour.",
+    ].join("\n")
+  );
 });
 
 bot.command("help", async (ctx) => {
