@@ -1402,11 +1402,15 @@ bot.command("feedback", async (ctx) => {
   if (!feedback) {
     await ctx.reply(
       [
-        "Usage:",
+        "Send feedback about Crypto Content Copilot",
+        "",
+        "Use:",
         "/feedback your message here",
         "",
-        "Example:",
+        "Examples:",
         "/feedback I want better TikTok scripts",
+        "/feedback Add more macro content angles",
+        "/feedback The hooks are too generic",
       ].join("\n")
     );
     return;
@@ -1451,9 +1455,14 @@ bot.command("feedback", async (ctx) => {
     ].join("\n")
   );
 
-  await ctx.reply("Thanks. Your feedback was sent.");
+  await ctx.reply(
+    [
+      "Thanks. Your feedback was sent.",
+      "",
+      "This helps improve the MVP.",
+    ].join("\n")
+  );
 });
-
 
 bot.command("admin_stats", async (ctx) => {
   if (!ctx.from) {
