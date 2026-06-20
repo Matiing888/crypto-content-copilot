@@ -1194,7 +1194,65 @@ bot.command("admin_pro", async (ctx) => {
 
   await ctx.reply(`User ${targetTelegramId} upgraded to PRO.`);
 });
+bot.command("admin_free", async (ctx) => {
+  if (!ctx.from) {
+    await ctx.reply("I could not read your Telegram profile.");
+    return;
+  }
 
+  const adminTelegramId = process.env.ADMIN_TELEGRAM_ID;
+
+  if (!adminTelegramId) {
+    await ctx.reply("ADMIN_TELEGRAM_ID is not set.");
+    return;
+  }
+
+  if (String(ctx.from.id) !== adminTelegramId) {
+    await ctx.reply("You are not allowed to use this admin command.");
+    return;
+  }
+
+  const text = ctx.message?.text ?? "";
+  const targetTelegramId = text.split(/\s+/)[1];
+
+  if (!targetTelegramId) {
+    await ctx.reply(
+      [
+        "Usage:",
+        "/admin_free 123456789",
+        "",
+        "This downgrades a Telegram user to FREE and clears Stripe subscription data.",
+      ].join("\n")
+    );
+    return;
+  }
+
+  const targetUser = await prisma.user.findUnique({
+    where: {
+      telegramId: BigInt(targetTelegramId),
+    },
+  });
+
+  if (!targetUser) {
+    await ctx.reply("User not found. The user must start the bot first with /start.");
+    return;
+  }
+
+  await prisma.user.update({
+    where: {
+      id: targetUser.id,
+    },
+    data: {
+      tier: "FREE",
+      stripeCustomerId: null,
+      stripeSubscriptionId: null,
+      subscriptionStatus: null,
+      subscriptionCurrentPeriodEnd: null,
+    },
+  });
+
+  await ctx.reply(`User ${targetTelegramId} downgraded to FREE and Stripe data cleared.`);
+});
 bot.command("status", async (ctx) => {
   const startedAtSecondsAgo = Math.floor(process.uptime());
 
