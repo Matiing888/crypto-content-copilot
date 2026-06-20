@@ -1061,10 +1061,11 @@ bot.command("upgrade", async (ctx) => {
       [
         "You are already on Crypto Content Copilot PRO.",
         "",
-        "Your subscription is active.",
+        "Your PRO access is active.",
         "",
-        "Use /plan to check your current plan.",
+        "Use /today to create a new content pack.",
         "Use /billing to manage or cancel your subscription.",
+        "Use /plan to check your current plan.",
       ].join("\n")
     );
     return;
@@ -1079,7 +1080,7 @@ bot.command("upgrade", async (ctx) => {
         telegramId: telegramUser.id.toString(),
       },
       name: telegramUser.first_name ?? undefined,
-      description: `Telegram user ${telegramUser.id}`,
+      description: "Telegram user " + telegramUser.id,
     });
 
     stripeCustomerId = customer.id;
@@ -1103,8 +1104,8 @@ bot.command("upgrade", async (ctx) => {
         quantity: 1,
       },
     ],
-    success_url: `${env.publicAppUrl}?checkout=success`,
-    cancel_url: `${env.publicAppUrl}?checkout=cancel`,
+    success_url: env.publicAppUrl + "?checkout=success",
+    cancel_url: env.publicAppUrl + "?checkout=cancel",
     metadata: {
       userId: user.id,
       telegramId: telegramUser.id.toString(),
@@ -1122,26 +1123,32 @@ bot.command("upgrade", async (ctx) => {
     return;
   }
 
-  const keyboard = new InlineKeyboard().url("Unlock PRO with Stripe", session.url);
+  const keyboard = new InlineKeyboard().url("Unlock PRO - 9 EUR/month", session.url);
 
   await ctx.reply(
     [
-      "Unlock Crypto Content Copilot PRO",
+      "Crypto Content Copilot PRO",
       "",
       "Price: 9 EUR / month",
       "",
-      "Create daily crypto and finance content without starting from a blank page.",
+      "Built for crypto and finance creators who want to publish consistently without starting from zero.",
       "",
-      "PRO gives you:",
-      "- more AI usage during MVP",
+      "PRO unlocks:",
+      "- more AI usage during the MVP",
       "- automatic daily content prompts",
       "- more saved ideas",
       "- more creator formats as the product grows",
       "- priority access to new features",
       "",
-      "Tap the button below to open Stripe Checkout.",
+      "Best for you if:",
+      "- you create crypto, finance or trading content",
+      "- you want daily angles, hooks and scripts faster",
+      "- you do not want the FREE limit to stop your workflow",
       "",
-      "After payment, PRO is activated automatically when Stripe confirms your subscription.",
+      "Payment is handled securely by Stripe.",
+      "PRO activates automatically after Stripe confirms your subscription.",
+      "",
+      "Tap the button below to unlock PRO.",
     ].join("\n"),
     {
       reply_markup: keyboard,
