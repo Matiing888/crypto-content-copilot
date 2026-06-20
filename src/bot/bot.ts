@@ -1,6 +1,7 @@
 ﻿import { Bot, InlineKeyboard } from "grammy";
 import { env } from "../env.js";
 import { prisma } from "../db/prisma.js";
+import { stripe } from "../billing/stripe.js";
 import { generateContentPack, generateMoreHooks, rewriteForX, makeItViral } from "../ai/contentPack.js";
 
 export const bot = new Bot(env.botToken);
@@ -957,6 +958,125 @@ bot.command("myid", async (ctx) => {
       String(ctx.from.id),
       "",
       "Use this as ADMIN_TELEGRAM_ID in your .env file if you want admin commands.",
+    ].join("\n")
+  );
+});
+
+bot.command("upgrade", async (ctx) => {
+  const telegramUser = ctx.from;
+
+  if (!telegramUser) {
+    await ctx.reply("I could not identify your Telegram account. Please try again.");
+    return;
+  }
+
+  let user = await getUserByTelegramId(telegramUser.id);
+
+  if (!user) {
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  if (user.tier === "PRO") {
+    await ctx.reply("You are already on PRO. Use /billing to manage your subscription.");
+    return;
+  }
+
+  let stripeCustomerId = user.stripeCustomerId;
+
+  if (!stripeCustomerId) {
+    const customer = await stripe.customers.create({
+      metadata: {
+        userId: user.id,
+        telegramId: telegramUser.id.toString(),
+      },
+      name: telegramUser.first_name ?? undefined,
+      description: `Telegram user ${telegramUser.id}`,
+    });
+
+    stripeCustomerId = customer.id;
+
+    user = await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        stripeCustomerId,
+      },
+    });
+  }
+
+  const session = await stripe.checkout.sessions.create({
+    mode: "subscription",
+    customer: stripeCustomerId,
+    line_items: [
+      {
+        price: env.stripeProPriceId,
+        quantity: 1,
+      },
+    ],
+    success_url: `${env.publicAppUrl}?checkout=success`,
+    cancel_url: `${env.publicAppUrl}?checkout=cancel`,
+    metadata: {
+      userId: user.id,
+      telegramId: telegramUser.id.toString(),
+    },
+    subscription_data: {
+      metadata: {
+        userId: user.id,
+        telegramId: telegramUser.id.toString(),
+      },
+    },
+  });
+
+  if (!session.url) {
+    await ctx.reply("Stripe did not return a checkout link. Please try again later.");
+    return;
+  }
+
+  await ctx.reply(
+    [
+      "Upgrade to Crypto Content Copilot PRO:",
+      "",
+      "PRO: 9 EUR / month",
+      "",
+      session.url,
+      "",
+      "After payment, your PRO plan will be activated automatically once Stripe confirms the subscription.",
+    ].join("\n")
+  );
+});
+
+bot.command("billing", async (ctx) => {
+  const telegramUser = ctx.from;
+
+  if (!telegramUser) {
+    await ctx.reply("I could not identify your Telegram account. Please try again.");
+    return;
+  }
+
+  const user = await getUserByTelegramId(telegramUser.id);
+
+  if (!user) {
+    await ctx.reply("Please start first with /start.");
+    return;
+  }
+
+  if (!user.stripeCustomerId) {
+    await ctx.reply("No Stripe customer found yet. Use /upgrade first.");
+    return;
+  }
+
+  const session = await stripe.billingPortal.sessions.create({
+    customer: user.stripeCustomerId,
+    return_url: env.publicAppUrl,
+  });
+
+  await ctx.reply(
+    [
+      "Manage your subscription here:",
+      "",
+      session.url,
     ].join("\n")
   );
 });
