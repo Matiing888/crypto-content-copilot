@@ -1142,34 +1142,29 @@ bot.command("upgrade", async (ctx) => {
     return;
   }
 
-  const keyboard = new InlineKeyboard().url("Unlock Founder PRO - 4.94.94.99 EUR/month", session.url);
+  const keyboard = new InlineKeyboard().url("Unlock Founder PRO - 4.99 EUR/month", session.url);
 
   await ctx.reply(
     [
       "Crypto Content Copilot Founder Beta PRO",
       "",
-      "Founder Beta price: 4.94.94.99 EUR / month",
+      "Founder Beta price: 4.99 EUR / month",
       "",
-      "Built for crypto and finance creators who want to publish consistently without starting from zero.",
+      "For early crypto and finance creators who want daily content packs inside Telegram.",
       "",
       "Founder Beta PRO unlocks:",
       "- more AI usage during the MVP",
       "- automatic daily content prompts",
       "- more saved ideas",
-      "- more creator formats as the product grows",
-      "- priority access to new features",
+      "- early access to new features",
+      "- founder price while subscribed",
       "",
-      "Best for you if:",
-      "- you create crypto, finance or trading content",
-      "- you want daily angles, hooks and scripts faster",
-      "- you do not want the FREE limit to stop your workflow",
-      "",
-      "Founder Beta users keep this early price while subscribed.",
+      "The regular PRO price may increase later as the product grows.",
       "",
       "Payment is handled securely by Stripe.",
       "PRO activates automatically after Stripe confirms your subscription.",
       "",
-      "Tap the button below to unlock PRO.",
+      "Tap the button below to unlock Founder Beta PRO.",
     ].join("\n"),
     {
       reply_markup: keyboard,
