@@ -1016,7 +1016,7 @@ bot.command("help", async (ctx) => {
       "/settings - change platform, niche or style",
       "/pushhour - set automatic daily push hour in UTC",
       "/plan - check your current FREE or PRO plan",
-      "/upgrade - unlock Crypto Content Copilot PRO",
+      "/upgrade - unlock Crypto Content Copilot Founder Beta PRO",
       "/app - open the Mini App",
       "/billing - manage or cancel your subscription",
       "/examples - show an example content pack",
@@ -1033,7 +1033,7 @@ bot.command("help", async (ctx) => {
       "FREE plan:",
       "3 AI actions per day.",
       "",
-      "PRO:",
+      "Founder Beta PRO:",
       "More AI usage, automatic daily prompts, more saved ideas and priority access during the MVP.",
       "",
       "Reminder:",
@@ -1078,7 +1078,7 @@ bot.command("upgrade", async (ctx) => {
   if (user.tier === "PRO") {
     await ctx.reply(
       [
-        "You are already on Crypto Content Copilot PRO.",
+        "You are already on Crypto Content Copilot Founder Beta PRO.",
         "",
         "Your PRO access is active.",
         "",
@@ -1142,17 +1142,17 @@ bot.command("upgrade", async (ctx) => {
     return;
   }
 
-  const keyboard = new InlineKeyboard().url("Unlock PRO - 9 EUR/month", session.url);
+  const keyboard = new InlineKeyboard().url("Unlock Founder PRO - 4.94.94.99 EUR/month", session.url);
 
   await ctx.reply(
     [
-      "Crypto Content Copilot PRO",
+      "Crypto Content Copilot Founder Beta PRO",
       "",
-      "Price: 9 EUR / month",
+      "Founder Beta price: 4.94.94.99 EUR / month",
       "",
       "Built for crypto and finance creators who want to publish consistently without starting from zero.",
       "",
-      "PRO unlocks:",
+      "Founder Beta PRO unlocks:",
       "- more AI usage during the MVP",
       "- automatic daily content prompts",
       "- more saved ideas",
@@ -1163,6 +1163,8 @@ bot.command("upgrade", async (ctx) => {
       "- you create crypto, finance or trading content",
       "- you want daily angles, hooks and scripts faster",
       "- you do not want the FREE limit to stop your workflow",
+      "",
+      "Founder Beta users keep this early price while subscribed.",
       "",
       "Payment is handled securely by Stripe.",
       "PRO activates automatically after Stripe confirms your subscription.",
@@ -1257,7 +1259,7 @@ bot.command("plan", async (ctx) => {
       "- Viral angle",
       "- Save pack",
       "",
-      "PRO:",
+      "Founder Beta PRO:",
       "- more AI usage during the MVP",
       "- automatic daily content prompts",
       "- more saved ideas",
