@@ -123,13 +123,13 @@ bot.command("start", async (ctx) => {
       telegramId: BigInt(from.id),
     },
     update: {
-      username: from.username ?? null,
-      firstName: from.first_name ?? null,
+      username: from.username  null,
+      firstName: from.first_name  null,
     },
     create: {
       telegramId: BigInt(from.id),
-      username: from.username ?? null,
-      firstName: from.first_name ?? null,
+      username: from.username  null,
+      firstName: from.first_name  null,
       state: "ONBOARDING",
     },
   });
@@ -143,11 +143,11 @@ bot.command("start", async (ctx) => {
     .text("YouTube Shorts", "platform:YOUTUBE_SHORTS")
     .text("Multi", "platform:MULTI");
 
-  const displayName = user.firstName ?? "creator";
+  const displayName = user.firstName  "creator";
 
   await ctx.reply(
     [
-      "gm " + displayName + " ??",
+      "gm " + displayName + " ",
       "",
       "Welcome to Crypto Content Copilot.",
       "",
@@ -203,7 +203,7 @@ bot.callbackQuery(/^platform:/, async (ctx) => {
     .text("Other", "niche:OTHER");
 
   await ctx.answerCallbackQuery();
-  await ctx.reply("Nice. What is your main niche?", {
+  await ctx.reply("Nice. What is your main niche", {
     reply_markup: keyboard,
   });
 });
@@ -237,7 +237,7 @@ bot.callbackQuery(/^niche:/, async (ctx) => {
     .text("Founder Brand", "style:FOUNDER_BRAND");
 
   await ctx.answerCallbackQuery();
-  await ctx.reply("Good. What content style fits you best?", {
+  await ctx.reply("Good. What content style fits you best", {
     reply_markup: keyboard,
   });
 });
@@ -395,7 +395,7 @@ bot.command("saved", async (ctx) => {
     .map((pack, index) => {
       const preview =
         pack.content.length > 700
-          ? `${pack.content.slice(0, 700)}...`
+           `${pack.content.slice(0, 700)}...`
           : pack.content;
 
       return [
@@ -664,13 +664,13 @@ bot.command("profile", async (ctx) => {
     [
       "Your creator profile",
       "",
-      `Platform: ${user.platform ?? "not set"}`,
-      `Niche: ${user.niche ?? "not set"}`,
-      `Style: ${user.style ?? "not set"}`,
+      `Platform: ${user.platform  "not set"}`,
+      `Niche: ${user.niche  "not set"}`,
+      `Style: ${user.style  "not set"}`,
       `Language: ${user.outputLanguage}`,
       `Plan: ${user.tier}`,
       "",
-      `AI actions used today: ${user.dailyGenerations}/${user.tier === "FREE" ? freeLimit : "unlimited"}`,
+      `AI actions used today: ${user.dailyGenerations}/${user.tier === "FREE"  freeLimit : "unlimited"}`,
       "",
       "Use /settings to change your profile.",
     ].join("\n")
@@ -703,11 +703,11 @@ bot.command("settings", async (ctx) => {
     [
       "Settings",
       "",
-      `Current platform: ${user.platform ?? "not set"}`,
-      `Current niche: ${user.niche ?? "not set"}`,
-      `Current style: ${user.style ?? "not set"}`,
+      `Current platform: ${user.platform  "not set"}`,
+      `Current niche: ${user.niche  "not set"}`,
+      `Current style: ${user.style  "not set"}`,
       "",
-      "What do you want to change?",
+      "What do you want to change",
     ].join("\n"),
     {
       reply_markup: keyboard,
@@ -735,13 +735,13 @@ bot.callbackQuery("settings:profile", async (ctx) => {
     [
       "Your creator profile",
       "",
-      `Platform: ${user.platform ?? "not set"}`,
-      `Niche: ${user.niche ?? "not set"}`,
-      `Style: ${user.style ?? "not set"}`,
+      `Platform: ${user.platform  "not set"}`,
+      `Niche: ${user.niche  "not set"}`,
+      `Style: ${user.style  "not set"}`,
       `Language: ${user.outputLanguage}`,
       `Plan: ${user.tier}`,
       "",
-      `AI actions used today: ${user.dailyGenerations}/${user.tier === "FREE" ? freeLimit : "unlimited"}`,
+      `AI actions used today: ${user.dailyGenerations}/${user.tier === "FREE"  freeLimit : "unlimited"}`,
     ].join("\n")
   );
 });
@@ -880,7 +880,7 @@ bot.command("pushhour", async (ctx) => {
     return;
   }
 
-  const text = ctx.message?.text ?? "";
+  const text = ctx.message.text  "";
   const rawHour = text.split(/\s+/)[1];
 
   if (!rawHour) {
@@ -920,25 +920,25 @@ bot.command("pushhour", async (ctx) => {
 bot.command("help", async (ctx) => {
   await ctx.reply(
     [
-      "Crypto Content Copilot � help",
+      "Crypto Content Copilot - help",
       "",
       "Main commands:",
       "",
-      "/today � generate today's crypto content pack",
-      "/saved � show your saved ideas",
-      "/profile � view your creator profile",
-      "/settings � change platform, niche or style",
-      "/pushhour � set your daily push hour in UTC",
-      "/plan � check your FREE or PRO status",
-      "/upgrade � unlock PRO with Stripe",
-      "/billing � manage or cancel your subscription",
+      "/today - generate today's crypto content pack",
+      "/saved - show your saved ideas",
+      "/profile - view your creator profile",
+      "/settings - change platform, niche or style",
+      "/pushhour - set your daily push hour in UTC",
+      "/plan - check your FREE or PRO status",
+      "/upgrade - unlock PRO with Stripe",
+      "/billing - manage or cancel your subscription",
       "",
       "After /today you can use:",
       "",
-      "More hooks � generate extra hook ideas",
-      "Rewrite for X � turn the idea into an X post/thread",
-      "Make it viral � create a sharper viral version",
-      "Save idea � save the latest content pack",
+      "More hooks - generate extra hook ideas",
+      "Rewrite for X - turn the idea into an X post/thread",
+      "Make it viral - create a sharper viral version",
+      "Save idea - save the latest content pack",
       "",
       "FREE plan:",
       "3 AI actions per day.",
@@ -988,7 +988,7 @@ bot.command("upgrade", async (ctx) => {
   if (user.tier === "PRO") {
     await ctx.reply(
       [
-        "You are already on PRO ?",
+        "You are already on PRO ",
         "",
         "Use /plan to check your current status.",
         "Use /billing to manage or cancel your subscription.",
@@ -1005,7 +1005,7 @@ bot.command("upgrade", async (ctx) => {
         userId: user.id,
         telegramId: telegramUser.id.toString(),
       },
-      name: telegramUser.first_name ?? undefined,
+      name: telegramUser.first_name  undefined,
       description: "Telegram user " + telegramUser.id,
     });
 
@@ -1030,8 +1030,8 @@ bot.command("upgrade", async (ctx) => {
         quantity: 1,
       },
     ],
-    success_url: env.publicAppUrl + "?checkout=success",
-    cancel_url: env.publicAppUrl + "?checkout=cancel",
+    success_url: env.publicAppUrl + "checkout=success",
+    cancel_url: env.publicAppUrl + "checkout=cancel",
     metadata: {
       userId: user.id,
       telegramId: telegramUser.id.toString(),
@@ -1134,16 +1134,16 @@ bot.command("plan", async (ctx) => {
   }
 
   const isPro = user.tier === "PRO";
-  const dailyLimitText = isPro ? "Unlimited during MVP testing" : freeLimit + " AI actions/day";
-  const subscriptionStatus = user.subscriptionStatus ?? "not connected";
+  const dailyLimitText = isPro  "Unlimited during MVP testing" : freeLimit + " AI actions/day";
+  const subscriptionStatus = user.subscriptionStatus  "not connected";
   const currentPeriodEndText = user.subscriptionCurrentPeriodEnd
-    ? user.subscriptionCurrentPeriodEnd.toISOString().slice(0, 10)
+     user.subscriptionCurrentPeriodEnd.toISOString().slice(0, 10)
     : "not available";
 
   if (isPro) {
     await ctx.reply(
       [
-        "Your plan: PRO ?",
+        "Your plan: PRO ",
         "",
         "Usage today: " + user.dailyGenerations + "/unlimited",
         "Current limit: " + dailyLimitText,
@@ -1223,7 +1223,7 @@ bot.command("admin_pro", async (ctx) => {
     return;
   }
 
-  const text = ctx.message?.text ?? "";
+  const text = ctx.message.text  "";
   const targetTelegramId = text.split(/\s+/)[1];
 
   if (!targetTelegramId) {
@@ -1280,7 +1280,7 @@ bot.command("admin_free", async (ctx) => {
     return;
   }
 
-  const text = ctx.message?.text ?? "";
+  const text = ctx.message.text  "";
   const targetTelegramId = text.split(/\s+/)[1];
 
   if (!targetTelegramId) {
@@ -1343,7 +1343,7 @@ bot.command("status", async (ctx) => {
     console.error("Status check OpenAI failed:", error);
   }
 
-  const stripeWebhookStatus = env.stripeWebhookSecret ? "configured" : "missing";
+  const stripeWebhookStatus = env.stripeWebhookSecret  "configured" : "missing";
 
   await ctx.reply(
     [
@@ -1353,11 +1353,11 @@ bot.command("status", async (ctx) => {
       "Database: " + dbStatus,
       "OpenAI: " + openAiStatus,
       "Stripe webhook secret: " + stripeWebhookStatus,
-      "Environment: " + (process.env.NODE_ENV ?? "development"),
+      "Environment: " + (process.env.NODE_ENV  "development"),
       "Uptime: " + startedAtSecondsAgo + " seconds",
       "",
       dbStatus === "OK" && openAiStatus === "OK" && stripeWebhookStatus === "configured"
-        ? "Everything looks healthy."
+         "Everything looks healthy."
         : "One or more systems need attention. Check the VPS logs.",
     ].join("\n")
   );
@@ -1407,8 +1407,8 @@ bot.command("feedback", async (ctx) => {
     return;
   }
 
-  const text = ctx.message?.text ?? "";
-  const feedback = text.replace(/^\/feedback(@\w+)?\s*/i, "").trim();
+  const text = ctx.message.text  "";
+  const feedback = text.replace(/^\/feedback(@\w+)\s*/i, "").trim();
 
   if (!feedback) {
     await ctx.reply(
@@ -1444,16 +1444,16 @@ bot.command("feedback", async (ctx) => {
       "New feedback",
       "",
       `From Telegram ID: ${ctx.from.id}`,
-      `Username: ${ctx.from.username ? "@" + ctx.from.username : "none"}`,
-      `First name: ${ctx.from.first_name ?? "none"}`,
+      `Username: ${ctx.from.username  "@" + ctx.from.username : "none"}`,
+      `First name: ${ctx.from.first_name  "none"}`,
       "",
       user
-        ? [
+         [
             "User profile:",
             `Plan: ${user.tier}`,
-            `Platform: ${user.platform ?? "not set"}`,
-            `Niche: ${user.niche ?? "not set"}`,
-            `Style: ${user.style ?? "not set"}`,
+            `Platform: ${user.platform  "not set"}`,
+            `Niche: ${user.niche  "not set"}`,
+            `Style: ${user.style  "not set"}`,
           ].join("\n")
         : "User profile: not found in database",
       "",
@@ -1529,7 +1529,7 @@ bot.command("admin_stats", async (ctx) => {
     },
   });
 
-  const aiActionsToday = aiActionsTodayAggregate._sum.dailyGenerations ?? 0;
+  const aiActionsToday = aiActionsTodayAggregate._sum.dailyGenerations  0;
 
   await ctx.reply(
     [
@@ -1585,13 +1585,13 @@ bot.command("admin_users", async (ctx) => {
       return [
         `${index + 1}. User`,
         `Telegram ID: ${user.telegramId.toString()}`,
-        `Username: ${user.username ? "@" + user.username : "none"}`,
-        `First name: ${user.firstName ?? "none"}`,
+        `Username: ${user.username  "@" + user.username : "none"}`,
+        `First name: ${user.firstName  "none"}`,
         `State: ${user.state}`,
         `Tier: ${user.tier}`,
-        `Platform: ${user.platform ?? "not set"}`,
-        `Niche: ${user.niche ?? "not set"}`,
-        `Style: ${user.style ?? "not set"}`,
+        `Platform: ${user.platform  "not set"}`,
+        `Niche: ${user.niche  "not set"}`,
+        `Style: ${user.style  "not set"}`,
         `AI actions today: ${user.dailyGenerations}`,
         `Created: ${user.createdAt.toISOString().slice(0, 10)}`,
       ].join("\n");
