@@ -668,9 +668,10 @@ bot.command("profile", async (ctx) => {
       `Language: ${user.outputLanguage}`,
       `Plan: ${user.tier}`,
       "",
-      `AI actions used today: ${user.dailyGenerations}/${user.tier === "FREE" ? freeLimit : "unlimited"}`,
+      `AI actions today: ${user.dailyGenerations}/${user.tier === "FREE" ? freeLimit : "unlimited"}`,
       "",
-      "Use /settings to change your profile.",
+      "Use /settings to update your creator profile.",
+      "Use /plan to check your current plan.",
     ].join("\n")
   );
 });
