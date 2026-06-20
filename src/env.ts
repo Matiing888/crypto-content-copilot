@@ -21,6 +21,7 @@ export const env = {
   openaiApiKey: process.env.OPENAI_API_KEY!,
   stripeSecretKey: process.env.STRIPE_SECRET_KEY!,
   stripeProPriceId: process.env.STRIPE_PRO_PRICE_ID!,
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
   publicAppUrl: process.env.PUBLIC_APP_URL!,
   port: Number(process.env.PORT ?? "3000"),
   nodeEnv: process.env.NODE_ENV ?? "development",
