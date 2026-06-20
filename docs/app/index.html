@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crypto Content Copilot</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --card: #101c2f;
+      --card-2: #13243d;
+      --text: #f4f7fb;
+      --muted: #9fb0c5;
+      --accent: #29d3a2;
+      --accent-2: #6aa7ff;
+      --border: rgba(255,255,255,0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(41, 211, 162, 0.20), transparent 35%),
+        radial-gradient(circle at top right, rgba(106, 167, 255, 0.18), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      width: min(720px, 100%);
+      margin: 0 auto;
+      padding: 24px 18px 40px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(32px, 9vw, 54px);
+      line-height: 0.95;
+      margin: 0 0 16px;
+      letter-spacing: -0.05em;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.55;
+      margin: 0 0 22px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--card), var(--card-2));
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.30);
+      margin: 14px 0;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .item {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255,255,255,0.045);
+    }
+
+    .item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .item span {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .cta {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      padding: 15px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #03120d;
+      background: linear-gradient(135deg, var(--accent), #8fffe1);
+    }
+
+    .secondary {
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      margin-top: 16px;
+    }
+
+    .footer {
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="badge">Telegram Mini App preview</div>
+
+    <h1>Crypto Content Copilot</h1>
+
+    <p class="lead">
+      AI content workflow for crypto and finance creators. Generate daily angles,
+      hooks, short-form ideas, scripts and X posts directly from Telegram.
+    </p>
+
+    <section class="card">
+      <strong>Your creator workflow</strong>
+
+      <div class="grid">
+        <div class="item">
+          <strong>Daily content pack</strong>
+          <span>Get a complete content idea with angle, hooks, script and CTA.</span>
+        </div>
+
+        <div class="item">
+          <strong>Repurpose faster</strong>
+          <span>Turn one idea into more hooks, a viral angle or an X-ready post.</span>
+        </div>
+
+        <div class="item">
+          <strong>Built for crypto creators</strong>
+          <span>Designed for Bitcoin, crypto trading, DeFi, macro and finance content.</span>
+        </div>
+      </div>
+
+      <div class="cta">
+        <button id="todayButton">Generate in Telegram</button>
+        <button id="upgradeButton" class="secondary">View PRO</button>
+      </div>
+
+      <p class="note">
+        This tool creates educational content ideas. It does not provide financial advice,
+        buy/sell signals, leverage guidance or guaranteed outcomes.
+      </p>
+    </section>
+
+    <section class="card">
+      <strong>PRO</strong>
+      <p class="lead" style="font-size:15px;margin-top:10px;margin-bottom:0;">
+        More AI usage during the MVP, automatic daily content prompts, more saved ideas
+        and priority access to new features.
+      </p>
+    </section>
+
+    <div class="footer">
+      Open this Mini App from Telegram for the best experience.
+    </div>
+  </main>
+
+  <script>
+    const tg = window.Telegram && window.Telegram.WebApp;
+
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+
+    function sendCommand(command) {
+      if (tg && tg.sendData) {
+        tg.sendData(command);
+        tg.close();
+        return;
+      }
+
+      window.location.href = "https://t.me/crypto_creator_copilot_bot";
+    }
+
+    document.getElementById("todayButton").addEventListener("click", function () {
+      sendCommand("/today");
+    });
+
+    document.getElementById("upgradeButton").addEventListener("click", function () {
+      sendCommand("/upgrade");
+    });
+  </script>
+</body>
+</html>

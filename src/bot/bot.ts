@@ -985,6 +985,23 @@ bot.command("pushhour", async (ctx) => {
   );
 });
 
+bot.command("app", async (ctx) => {
+  const keyboard = new InlineKeyboard().webApp("Open Mini App", "https://matiing888.github.io/crypto-content-copilot/app/");
+
+  await ctx.reply(
+    [
+      "Open Crypto Content Copilot Mini App",
+      "",
+      "Use the Mini App to view the product workflow inside Telegram.",
+      "",
+      "You can still use /today, /saved, /plan and /upgrade directly in chat.",
+    ].join("\n"),
+    {
+      reply_markup: keyboard,
+    }
+  );
+});
+
 bot.command("help", async (ctx) => {
   await ctx.reply(
     [
@@ -1000,6 +1017,7 @@ bot.command("help", async (ctx) => {
       "/pushhour - set automatic daily push hour in UTC",
       "/plan - check your current FREE or PRO plan",
       "/upgrade - unlock Crypto Content Copilot PRO",
+      "/app - open the Mini App",
       "/billing - manage or cancel your subscription",
       "/examples - show an example content pack",
       "/feedback - send product feedback",
