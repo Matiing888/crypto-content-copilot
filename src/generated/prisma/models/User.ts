@@ -53,6 +53,10 @@ export type UserMinAggregateOutputType = {
   outputLanguage: string | null
   dailyGenerations: number | null
   lastResetDate: Date | null
+  stripeCustomerId: string | null
+  stripeSubscriptionId: string | null
+  subscriptionStatus: string | null
+  subscriptionCurrentPeriodEnd: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +76,10 @@ export type UserMaxAggregateOutputType = {
   outputLanguage: string | null
   dailyGenerations: number | null
   lastResetDate: Date | null
+  stripeCustomerId: string | null
+  stripeSubscriptionId: string | null
+  subscriptionStatus: string | null
+  subscriptionCurrentPeriodEnd: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -91,6 +99,10 @@ export type UserCountAggregateOutputType = {
   outputLanguage: number
   dailyGenerations: number
   lastResetDate: number
+  stripeCustomerId: number
+  stripeSubscriptionId: number
+  subscriptionStatus: number
+  subscriptionCurrentPeriodEnd: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -124,6 +136,10 @@ export type UserMinAggregateInputType = {
   outputLanguage?: true
   dailyGenerations?: true
   lastResetDate?: true
+  stripeCustomerId?: true
+  stripeSubscriptionId?: true
+  subscriptionStatus?: true
+  subscriptionCurrentPeriodEnd?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -143,6 +159,10 @@ export type UserMaxAggregateInputType = {
   outputLanguage?: true
   dailyGenerations?: true
   lastResetDate?: true
+  stripeCustomerId?: true
+  stripeSubscriptionId?: true
+  subscriptionStatus?: true
+  subscriptionCurrentPeriodEnd?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -162,6 +182,10 @@ export type UserCountAggregateInputType = {
   outputLanguage?: true
   dailyGenerations?: true
   lastResetDate?: true
+  stripeCustomerId?: true
+  stripeSubscriptionId?: true
+  subscriptionStatus?: true
+  subscriptionCurrentPeriodEnd?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -268,6 +292,10 @@ export type UserGroupByOutputType = {
   outputLanguage: string
   dailyGenerations: number
   lastResetDate: Date
+  stripeCustomerId: string | null
+  stripeSubscriptionId: string | null
+  subscriptionStatus: string | null
+  subscriptionCurrentPeriodEnd: Date | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -310,6 +338,10 @@ export type UserWhereInput = {
   outputLanguage?: Prisma.StringFilter<"User"> | string
   dailyGenerations?: Prisma.IntFilter<"User"> | number
   lastResetDate?: Prisma.DateTimeFilter<"User"> | Date | string
+  stripeCustomerId?: Prisma.StringNullableFilter<"User"> | string | null
+  stripeSubscriptionId?: Prisma.StringNullableFilter<"User"> | string | null
+  subscriptionStatus?: Prisma.StringNullableFilter<"User"> | string | null
+  subscriptionCurrentPeriodEnd?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   contentPacks?: Prisma.ContentPackListRelationFilter
@@ -330,6 +362,10 @@ export type UserOrderByWithRelationInput = {
   outputLanguage?: Prisma.SortOrder
   dailyGenerations?: Prisma.SortOrder
   lastResetDate?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  subscriptionCurrentPeriodEnd?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   contentPacks?: Prisma.ContentPackOrderByRelationAggregateInput
@@ -353,6 +389,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   outputLanguage?: Prisma.StringFilter<"User"> | string
   dailyGenerations?: Prisma.IntFilter<"User"> | number
   lastResetDate?: Prisma.DateTimeFilter<"User"> | Date | string
+  stripeCustomerId?: Prisma.StringNullableFilter<"User"> | string | null
+  stripeSubscriptionId?: Prisma.StringNullableFilter<"User"> | string | null
+  subscriptionStatus?: Prisma.StringNullableFilter<"User"> | string | null
+  subscriptionCurrentPeriodEnd?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   contentPacks?: Prisma.ContentPackListRelationFilter
@@ -373,6 +413,10 @@ export type UserOrderByWithAggregationInput = {
   outputLanguage?: Prisma.SortOrder
   dailyGenerations?: Prisma.SortOrder
   lastResetDate?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  subscriptionCurrentPeriodEnd?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -400,6 +444,10 @@ export type UserScalarWhereWithAggregatesInput = {
   outputLanguage?: Prisma.StringWithAggregatesFilter<"User"> | string
   dailyGenerations?: Prisma.IntWithAggregatesFilter<"User"> | number
   lastResetDate?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  stripeCustomerId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  stripeSubscriptionId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  subscriptionStatus?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  subscriptionCurrentPeriodEnd?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -419,6 +467,10 @@ export type UserCreateInput = {
   outputLanguage?: string
   dailyGenerations?: number
   lastResetDate?: Date | string
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  subscriptionCurrentPeriodEnd?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   contentPacks?: Prisma.ContentPackCreateNestedManyWithoutUserInput
@@ -439,6 +491,10 @@ export type UserUncheckedCreateInput = {
   outputLanguage?: string
   dailyGenerations?: number
   lastResetDate?: Date | string
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  subscriptionCurrentPeriodEnd?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   contentPacks?: Prisma.ContentPackUncheckedCreateNestedManyWithoutUserInput
@@ -459,6 +515,10 @@ export type UserUpdateInput = {
   outputLanguage?: Prisma.StringFieldUpdateOperationsInput | string
   dailyGenerations?: Prisma.IntFieldUpdateOperationsInput | number
   lastResetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contentPacks?: Prisma.ContentPackUpdateManyWithoutUserNestedInput
@@ -479,6 +539,10 @@ export type UserUncheckedUpdateInput = {
   outputLanguage?: Prisma.StringFieldUpdateOperationsInput | string
   dailyGenerations?: Prisma.IntFieldUpdateOperationsInput | number
   lastResetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contentPacks?: Prisma.ContentPackUncheckedUpdateManyWithoutUserNestedInput
@@ -499,6 +563,10 @@ export type UserCreateManyInput = {
   outputLanguage?: string
   dailyGenerations?: number
   lastResetDate?: Date | string
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  subscriptionCurrentPeriodEnd?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -518,6 +586,10 @@ export type UserUpdateManyMutationInput = {
   outputLanguage?: Prisma.StringFieldUpdateOperationsInput | string
   dailyGenerations?: Prisma.IntFieldUpdateOperationsInput | number
   lastResetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -537,6 +609,10 @@ export type UserUncheckedUpdateManyInput = {
   outputLanguage?: Prisma.StringFieldUpdateOperationsInput | string
   dailyGenerations?: Prisma.IntFieldUpdateOperationsInput | number
   lastResetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -556,6 +632,10 @@ export type UserCountOrderByAggregateInput = {
   outputLanguage?: Prisma.SortOrder
   dailyGenerations?: Prisma.SortOrder
   lastResetDate?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrder
+  subscriptionCurrentPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -581,6 +661,10 @@ export type UserMaxOrderByAggregateInput = {
   outputLanguage?: Prisma.SortOrder
   dailyGenerations?: Prisma.SortOrder
   lastResetDate?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrder
+  subscriptionCurrentPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -600,6 +684,10 @@ export type UserMinOrderByAggregateInput = {
   outputLanguage?: Prisma.SortOrder
   dailyGenerations?: Prisma.SortOrder
   lastResetDate?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrder
+  subscriptionCurrentPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -663,6 +751,10 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type UserCreateNestedOneWithoutContentPacksInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutContentPacksInput, Prisma.UserUncheckedCreateWithoutContentPacksInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutContentPacksInput
@@ -692,6 +784,10 @@ export type UserCreateWithoutContentPacksInput = {
   outputLanguage?: string
   dailyGenerations?: number
   lastResetDate?: Date | string
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  subscriptionCurrentPeriodEnd?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -711,6 +807,10 @@ export type UserUncheckedCreateWithoutContentPacksInput = {
   outputLanguage?: string
   dailyGenerations?: number
   lastResetDate?: Date | string
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  subscriptionCurrentPeriodEnd?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -746,6 +846,10 @@ export type UserUpdateWithoutContentPacksInput = {
   outputLanguage?: Prisma.StringFieldUpdateOperationsInput | string
   dailyGenerations?: Prisma.IntFieldUpdateOperationsInput | number
   lastResetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -765,6 +869,10 @@ export type UserUncheckedUpdateWithoutContentPacksInput = {
   outputLanguage?: Prisma.StringFieldUpdateOperationsInput | string
   dailyGenerations?: Prisma.IntFieldUpdateOperationsInput | number
   lastResetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionCurrentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -815,6 +923,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   outputLanguage?: boolean
   dailyGenerations?: boolean
   lastResetDate?: boolean
+  stripeCustomerId?: boolean
+  stripeSubscriptionId?: boolean
+  subscriptionStatus?: boolean
+  subscriptionCurrentPeriodEnd?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   contentPacks?: boolean | Prisma.User$contentPacksArgs<ExtArgs>
@@ -836,6 +948,10 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   outputLanguage?: boolean
   dailyGenerations?: boolean
   lastResetDate?: boolean
+  stripeCustomerId?: boolean
+  stripeSubscriptionId?: boolean
+  subscriptionStatus?: boolean
+  subscriptionCurrentPeriodEnd?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -855,6 +971,10 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   outputLanguage?: boolean
   dailyGenerations?: boolean
   lastResetDate?: boolean
+  stripeCustomerId?: boolean
+  stripeSubscriptionId?: boolean
+  subscriptionStatus?: boolean
+  subscriptionCurrentPeriodEnd?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -874,11 +994,15 @@ export type UserSelectScalar = {
   outputLanguage?: boolean
   dailyGenerations?: boolean
   lastResetDate?: boolean
+  stripeCustomerId?: boolean
+  stripeSubscriptionId?: boolean
+  subscriptionStatus?: boolean
+  subscriptionCurrentPeriodEnd?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "telegramId" | "username" | "firstName" | "state" | "tier" | "platform" | "niche" | "style" | "timezone" | "pushHour" | "outputLanguage" | "dailyGenerations" | "lastResetDate" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "telegramId" | "username" | "firstName" | "state" | "tier" | "platform" | "niche" | "style" | "timezone" | "pushHour" | "outputLanguage" | "dailyGenerations" | "lastResetDate" | "stripeCustomerId" | "stripeSubscriptionId" | "subscriptionStatus" | "subscriptionCurrentPeriodEnd" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   contentPacks?: boolean | Prisma.User$contentPacksArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -906,6 +1030,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     outputLanguage: string
     dailyGenerations: number
     lastResetDate: Date
+    stripeCustomerId: string | null
+    stripeSubscriptionId: string | null
+    subscriptionStatus: string | null
+    subscriptionCurrentPeriodEnd: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1346,6 +1474,10 @@ export interface UserFieldRefs {
   readonly outputLanguage: Prisma.FieldRef<"User", 'String'>
   readonly dailyGenerations: Prisma.FieldRef<"User", 'Int'>
   readonly lastResetDate: Prisma.FieldRef<"User", 'DateTime'>
+  readonly stripeCustomerId: Prisma.FieldRef<"User", 'String'>
+  readonly stripeSubscriptionId: Prisma.FieldRef<"User", 'String'>
+  readonly subscriptionStatus: Prisma.FieldRef<"User", 'String'>
+  readonly subscriptionCurrentPeriodEnd: Prisma.FieldRef<"User", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }

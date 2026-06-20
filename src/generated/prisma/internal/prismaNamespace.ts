@@ -607,6 +607,10 @@ export const UserScalarFieldEnum = {
   outputLanguage: 'outputLanguage',
   dailyGenerations: 'dailyGenerations',
   lastResetDate: 'lastResetDate',
+  stripeCustomerId: 'stripeCustomerId',
+  stripeSubscriptionId: 'stripeSubscriptionId',
+  subscriptionStatus: 'subscriptionStatus',
+  subscriptionCurrentPeriodEnd: 'subscriptionCurrentPeriodEnd',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

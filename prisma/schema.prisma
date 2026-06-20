@@ -66,6 +66,11 @@ model User {
   dailyGenerations Int              @default(0)
   lastResetDate    DateTime         @default(now())
 
+  stripeCustomerId                 String?
+  stripeSubscriptionId             String?
+  subscriptionStatus               String?
+  subscriptionCurrentPeriodEnd     DateTime?
+
   contentPacks     ContentPack[]
 
   createdAt        DateTime         @default(now())
