@@ -109,7 +109,6 @@ function contentPackKeyboard() {
     .text("Save idea", "action:save_idea");
 }
 
-
 bot.command("start", async (ctx) => {
   const from = ctx.from;
 
@@ -123,13 +122,13 @@ bot.command("start", async (ctx) => {
       telegramId: BigInt(from.id),
     },
     update: {
-      username: from.username  null,
-      firstName: from.first_name  null,
+      username: from.username ?? null,
+      firstName: from.first_name ?? null,
     },
     create: {
       telegramId: BigInt(from.id),
-      username: from.username  null,
-      firstName: from.first_name  null,
+      username: from.username ?? null,
+      firstName: from.first_name ?? null,
       state: "ONBOARDING",
     },
   });
@@ -143,29 +142,27 @@ bot.command("start", async (ctx) => {
     .text("YouTube Shorts", "platform:YOUTUBE_SHORTS")
     .text("Multi", "platform:MULTI");
 
-  const displayName = user.firstName  "creator";
-
   await ctx.reply(
     [
-      "gm " + displayName + " ",
+      `gm ${user.firstName ?? "creator"}`,
       "",
       "Welcome to Crypto Content Copilot.",
       "",
-      "This bot helps crypto and finance creators turn daily market themes into ready-to-post content.",
-      "",
-      "You can generate:",
+      "Get daily content ideas for crypto and finance creators:",
       "- scroll-stopping hooks",
       "- short-form video ideas",
       "- 30-60 second scripts",
-      "- X posts and thread angles",
-      "- sharper viral rewrites",
-      "- daily automatic content prompts",
+      "- X posts and threads",
+      "- viral angles",
+      "- daily automatic content push",
       "",
-      "Important:",
-      "This is a content creation tool.",
-      "It does not provide financial advice, buy/sell signals, leverage calls, or guaranteed outcomes.",
+      "No financial advice.",
+      "No buy/sell signals.",
+      "No leverage calls.",
       "",
-      "First step: choose your main platform.",
+      "Just creator content you can publish faster.",
+      "",
+      "First question: what is your main platform?",
     ].join("\n"),
     {
       reply_markup: keyboard,
@@ -203,7 +200,7 @@ bot.callbackQuery(/^platform:/, async (ctx) => {
     .text("Other", "niche:OTHER");
 
   await ctx.answerCallbackQuery();
-  await ctx.reply("Nice. What is your main niche", {
+  await ctx.reply("Nice. What is your main niche?", {
     reply_markup: keyboard,
   });
 });
@@ -237,7 +234,7 @@ bot.callbackQuery(/^niche:/, async (ctx) => {
     .text("Founder Brand", "style:FOUNDER_BRAND");
 
   await ctx.answerCallbackQuery();
-  await ctx.reply("Good. What content style fits you best", {
+  await ctx.reply("Good. What content style fits you best?", {
     reply_markup: keyboard,
   });
 });
@@ -395,7 +392,7 @@ bot.command("saved", async (ctx) => {
     .map((pack, index) => {
       const preview =
         pack.content.length > 700
-           `${pack.content.slice(0, 700)}...`
+          ? `${pack.content.slice(0, 700)}...`
           : pack.content;
 
       return [
@@ -664,13 +661,13 @@ bot.command("profile", async (ctx) => {
     [
       "Your creator profile",
       "",
-      `Platform: ${user.platform  "not set"}`,
-      `Niche: ${user.niche  "not set"}`,
-      `Style: ${user.style  "not set"}`,
+      `Platform: ${user.platform ?? "not set"}`,
+      `Niche: ${user.niche ?? "not set"}`,
+      `Style: ${user.style ?? "not set"}`,
       `Language: ${user.outputLanguage}`,
       `Plan: ${user.tier}`,
       "",
-      `AI actions used today: ${user.dailyGenerations}/${user.tier === "FREE"  freeLimit : "unlimited"}`,
+      `AI actions used today: ${user.dailyGenerations}/${user.tier === "FREE" ? freeLimit : "unlimited"}`,
       "",
       "Use /settings to change your profile.",
     ].join("\n")
@@ -703,11 +700,11 @@ bot.command("settings", async (ctx) => {
     [
       "Settings",
       "",
-      `Current platform: ${user.platform  "not set"}`,
-      `Current niche: ${user.niche  "not set"}`,
-      `Current style: ${user.style  "not set"}`,
+      `Current platform: ${user.platform ?? "not set"}`,
+      `Current niche: ${user.niche ?? "not set"}`,
+      `Current style: ${user.style ?? "not set"}`,
       "",
-      "What do you want to change",
+      "What do you want to change?",
     ].join("\n"),
     {
       reply_markup: keyboard,
@@ -735,13 +732,13 @@ bot.callbackQuery("settings:profile", async (ctx) => {
     [
       "Your creator profile",
       "",
-      `Platform: ${user.platform  "not set"}`,
-      `Niche: ${user.niche  "not set"}`,
-      `Style: ${user.style  "not set"}`,
+      `Platform: ${user.platform ?? "not set"}`,
+      `Niche: ${user.niche ?? "not set"}`,
+      `Style: ${user.style ?? "not set"}`,
       `Language: ${user.outputLanguage}`,
       `Plan: ${user.tier}`,
       "",
-      `AI actions used today: ${user.dailyGenerations}/${user.tier === "FREE"  freeLimit : "unlimited"}`,
+      `AI actions used today: ${user.dailyGenerations}/${user.tier === "FREE" ? freeLimit : "unlimited"}`,
     ].join("\n")
   );
 });
@@ -880,7 +877,7 @@ bot.command("pushhour", async (ctx) => {
     return;
   }
 
-  const text = ctx.message.text  "";
+  const text = ctx.message?.text ?? "";
   const rawHour = text.split(/\s+/)[1];
 
   if (!rawHour) {
@@ -916,38 +913,34 @@ bot.command("pushhour", async (ctx) => {
   await ctx.reply(`Daily push hour updated to ${hour}:00 UTC.`);
 });
 
-
 bot.command("help", async (ctx) => {
   await ctx.reply(
     [
       "Crypto Content Copilot - help",
       "",
-      "Main commands:",
+      "Commands:",
       "",
-      "/today - generate today's crypto content pack",
-      "/saved - show your saved ideas",
-      "/profile - view your creator profile",
+      "/start - setup your creator profile",
+      "/today - generate today's content pack",
+      "/saved - show your saved content packs",
+      "/profile - show your creator profile",
       "/settings - change platform, niche or style",
-      "/pushhour - set your daily push hour in UTC",
-      "/plan - check your FREE or PRO status",
-      "/upgrade - unlock PRO with Stripe",
-      "/billing - manage or cancel your subscription",
+      "/pushhour - set automatic daily push hour in UTC",
+      "/help - show this help message",
       "",
-      "After /today you can use:",
+      "Buttons after /today:",
       "",
-      "More hooks - generate extra hook ideas",
-      "Rewrite for X - turn the idea into an X post/thread",
+      "More hooks - generate 10 additional hooks",
+      "Rewrite for X - turn the pack into an X post and thread",
       "Make it viral - create a sharper viral version",
       "Save idea - save the latest content pack",
       "",
-      "FREE plan:",
+      "Free plan:",
       "3 AI actions per day.",
       "",
-      "PRO:",
-      "More AI usage, daily content push, and more creator workflow features during MVP.",
-      "",
-      "Reminder:",
-      "This bot creates educational crypto and finance content. It is not financial advice and does not give buy/sell signals.",
+      "Important:",
+      "This bot creates educational crypto and finance content.",
+      "It does not provide financial advice, buy/sell signals, leverage guidance, or guaranteed outcomes.",
     ].join("\n")
   );
 });
@@ -969,7 +962,6 @@ bot.command("myid", async (ctx) => {
   );
 });
 
-
 bot.command("upgrade", async (ctx) => {
   const telegramUser = ctx.from;
 
@@ -986,14 +978,7 @@ bot.command("upgrade", async (ctx) => {
   }
 
   if (user.tier === "PRO") {
-    await ctx.reply(
-      [
-        "You are already on PRO ",
-        "",
-        "Use /plan to check your current status.",
-        "Use /billing to manage or cancel your subscription.",
-      ].join("\n")
-    );
+    await ctx.reply("You are already on PRO. Use /billing to manage your subscription.");
     return;
   }
 
@@ -1005,8 +990,8 @@ bot.command("upgrade", async (ctx) => {
         userId: user.id,
         telegramId: telegramUser.id.toString(),
       },
-      name: telegramUser.first_name  undefined,
-      description: "Telegram user " + telegramUser.id,
+      name: telegramUser.first_name ?? undefined,
+      description: `Telegram user ${telegramUser.id}`,
     });
 
     stripeCustomerId = customer.id;
@@ -1030,8 +1015,8 @@ bot.command("upgrade", async (ctx) => {
         quantity: 1,
       },
     ],
-    success_url: env.publicAppUrl + "checkout=success",
-    cancel_url: env.publicAppUrl + "checkout=cancel",
+    success_url: `${env.publicAppUrl}?checkout=success`,
+    cancel_url: `${env.publicAppUrl}?checkout=cancel`,
     metadata: {
       userId: user.id,
       telegramId: telegramUser.id.toString(),
@@ -1049,33 +1034,23 @@ bot.command("upgrade", async (ctx) => {
     return;
   }
 
-  const keyboard = new InlineKeyboard().url("Unlock PRO with Stripe", session.url);
+  const keyboard = new InlineKeyboard().url("Pay with Stripe", session.url);
 
   await ctx.reply(
     [
-      "Unlock Crypto Content Copilot PRO",
+      "Upgrade to Crypto Content Copilot PRO",
       "",
-      "Price: 9 EUR / month",
-      "",
-      "Built for crypto and finance creators who want daily content without starting from a blank page.",
-      "",
-      "PRO includes:",
-      "- unlimited AI actions during MVP testing",
-      "- automatic daily content push",
-      "- more room to save and reuse ideas",
-      "- more creator formats as the product expands",
-      "- priority access to new MVP features",
+      "PRO: 9 EUR / month",
       "",
       "Tap the button below to open Stripe Checkout.",
       "",
-      "After payment, PRO is activated automatically when Stripe confirms your subscription.",
+      "After payment, your PRO plan will be activated automatically once Stripe confirms the subscription.",
     ].join("\n"),
     {
       reply_markup: keyboard,
     }
   );
 });
-
 
 bot.command("billing", async (ctx) => {
   const telegramUser = ctx.from;
@@ -1093,13 +1068,7 @@ bot.command("billing", async (ctx) => {
   }
 
   if (!user.stripeCustomerId) {
-    await ctx.reply(
-      [
-        "No billing profile found yet.",
-        "",
-        "Use /upgrade to start a PRO subscription with Stripe.",
-      ].join("\n")
-    );
+    await ctx.reply("No Stripe customer found yet. Use /upgrade first.");
     return;
   }
 
@@ -1110,15 +1079,12 @@ bot.command("billing", async (ctx) => {
 
   await ctx.reply(
     [
-      "Manage your subscription in Stripe:",
+      "Manage your subscription here:",
       "",
       session.url,
-      "",
-      "You can update payment details or cancel your subscription there.",
     ].join("\n")
   );
 });
-
 
 bot.command("plan", async (ctx) => {
   if (!ctx.from) {
@@ -1133,45 +1099,14 @@ bot.command("plan", async (ctx) => {
     return;
   }
 
-  const isPro = user.tier === "PRO";
-  const dailyLimitText = isPro  "Unlimited during MVP testing" : freeLimit + " AI actions/day";
-  const subscriptionStatus = user.subscriptionStatus  "not connected";
-  const currentPeriodEndText = user.subscriptionCurrentPeriodEnd
-     user.subscriptionCurrentPeriodEnd.toISOString().slice(0, 10)
-    : "not available";
-
-  if (isPro) {
-    await ctx.reply(
-      [
-        "Your plan: PRO ",
-        "",
-        "Usage today: " + user.dailyGenerations + "/unlimited",
-        "Current limit: " + dailyLimitText,
-        "Subscription status: " + subscriptionStatus,
-        "Current period ends: " + currentPeriodEndText,
-        "",
-        "PRO includes:",
-        "- unlimited AI actions during MVP testing",
-        "- /today content packs",
-        "- More hooks",
-        "- Rewrite for X",
-        "- Make it viral",
-        "- Save idea",
-        "- automatic daily content push",
-        "- access to new MVP features",
-        "",
-        "Use /billing to manage or cancel your subscription.",
-      ].join("\n")
-    );
-    return;
-  }
+  const dailyLimitText = user.tier === "FREE" ? `${freeLimit} AI actions/day` : "Unlimited AI actions/day for MVP testing";
 
   await ctx.reply(
     [
-      "Your plan: FREE",
+      "Your plan",
       "",
-      "Usage today: " + user.dailyGenerations + "/" + freeLimit,
-      "Current limit: " + dailyLimitText,
+      `Current plan: ${user.tier}`,
+      `Usage today: ${user.dailyGenerations}/${user.tier === "FREE" ? freeLimit : "unlimited"}`,
       "",
       "FREE includes:",
       "- 3 AI actions per day",
@@ -1181,14 +1116,18 @@ bot.command("plan", async (ctx) => {
       "- Make it viral",
       "- Save idea",
       "",
-      "Upgrade to PRO for:",
-      "- unlimited AI actions during MVP testing",
-      "- daily automatic content push",
-      "- more saved ideas",
-      "- more creator formats",
-      "- priority MVP features",
+      "PRO will include:",
+      "- More daily AI generations",
+      "- Daily automatic content push",
+      "- More saved ideas",
+      "- More creator formats",
+      "- Priority features",
       "",
+      `Current limit: ${dailyLimitText}`,
+      "",
+      "Payments are active.",
       "Use /upgrade to subscribe to PRO.",
+      "Use /billing to manage your subscription.",
     ].join("\n")
   );
 });
@@ -1223,7 +1162,7 @@ bot.command("admin_pro", async (ctx) => {
     return;
   }
 
-  const text = ctx.message.text  "";
+  const text = ctx.message?.text ?? "";
   const targetTelegramId = text.split(/\s+/)[1];
 
   if (!targetTelegramId) {
@@ -1280,7 +1219,7 @@ bot.command("admin_free", async (ctx) => {
     return;
   }
 
-  const text = ctx.message.text  "";
+  const text = ctx.message?.text ?? "";
   const targetTelegramId = text.split(/\s+/)[1];
 
   if (!targetTelegramId) {
@@ -1321,7 +1260,6 @@ bot.command("admin_free", async (ctx) => {
 
   await ctx.reply(`User ${targetTelegramId} downgraded to FREE and Stripe data cleared.`);
 });
-
 bot.command("status", async (ctx) => {
   const startedAtSecondsAgo = Math.floor(process.uptime());
 
@@ -1343,22 +1281,19 @@ bot.command("status", async (ctx) => {
     console.error("Status check OpenAI failed:", error);
   }
 
-  const stripeWebhookStatus = env.stripeWebhookSecret  "configured" : "missing";
-
   await ctx.reply(
     [
       "System status",
       "",
-      "Bot: OK",
-      "Database: " + dbStatus,
-      "OpenAI: " + openAiStatus,
-      "Stripe webhook secret: " + stripeWebhookStatus,
-      "Environment: " + (process.env.NODE_ENV  "development"),
-      "Uptime: " + startedAtSecondsAgo + " seconds",
+      `Bot: OK`,
+      `Database: ${dbStatus}`,
+      `OpenAI: ${openAiStatus}`,
+      `Environment: ${process.env.NODE_ENV ?? "development"}`,
+      `Uptime: ${startedAtSecondsAgo} seconds`,
       "",
-      dbStatus === "OK" && openAiStatus === "OK" && stripeWebhookStatus === "configured"
-         "Everything looks healthy."
-        : "One or more systems need attention. Check the VPS logs.",
+      dbStatus === "OK" && openAiStatus === "OK"
+        ? "Everything looks healthy."
+        : "One or more systems have a problem. Check the terminal logs.",
     ].join("\n")
   );
 });
@@ -1407,8 +1342,8 @@ bot.command("feedback", async (ctx) => {
     return;
   }
 
-  const text = ctx.message.text  "";
-  const feedback = text.replace(/^\/feedback(@\w+)\s*/i, "").trim();
+  const text = ctx.message?.text ?? "";
+  const feedback = text.replace(/^\/feedback(@\w+)?\s*/i, "").trim();
 
   if (!feedback) {
     await ctx.reply(
@@ -1444,16 +1379,16 @@ bot.command("feedback", async (ctx) => {
       "New feedback",
       "",
       `From Telegram ID: ${ctx.from.id}`,
-      `Username: ${ctx.from.username  "@" + ctx.from.username : "none"}`,
-      `First name: ${ctx.from.first_name  "none"}`,
+      `Username: ${ctx.from.username ? "@" + ctx.from.username : "none"}`,
+      `First name: ${ctx.from.first_name ?? "none"}`,
       "",
       user
-         [
+        ? [
             "User profile:",
             `Plan: ${user.tier}`,
-            `Platform: ${user.platform  "not set"}`,
-            `Niche: ${user.niche  "not set"}`,
-            `Style: ${user.style  "not set"}`,
+            `Platform: ${user.platform ?? "not set"}`,
+            `Niche: ${user.niche ?? "not set"}`,
+            `Style: ${user.style ?? "not set"}`,
           ].join("\n")
         : "User profile: not found in database",
       "",
@@ -1529,7 +1464,7 @@ bot.command("admin_stats", async (ctx) => {
     },
   });
 
-  const aiActionsToday = aiActionsTodayAggregate._sum.dailyGenerations  0;
+  const aiActionsToday = aiActionsTodayAggregate._sum.dailyGenerations ?? 0;
 
   await ctx.reply(
     [
@@ -1585,13 +1520,13 @@ bot.command("admin_users", async (ctx) => {
       return [
         `${index + 1}. User`,
         `Telegram ID: ${user.telegramId.toString()}`,
-        `Username: ${user.username  "@" + user.username : "none"}`,
-        `First name: ${user.firstName  "none"}`,
+        `Username: ${user.username ? "@" + user.username : "none"}`,
+        `First name: ${user.firstName ?? "none"}`,
         `State: ${user.state}`,
         `Tier: ${user.tier}`,
-        `Platform: ${user.platform  "not set"}`,
-        `Niche: ${user.niche  "not set"}`,
-        `Style: ${user.style  "not set"}`,
+        `Platform: ${user.platform ?? "not set"}`,
+        `Niche: ${user.niche ?? "not set"}`,
+        `Style: ${user.style ?? "not set"}`,
         `AI actions today: ${user.dailyGenerations}`,
         `Created: ${user.createdAt.toISOString().slice(0, 10)}`,
       ].join("\n");
