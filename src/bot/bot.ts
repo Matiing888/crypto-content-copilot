@@ -1341,6 +1341,8 @@ bot.command("status", async (ctx) => {
     console.error("Status check OpenAI failed:", error);
   }
 
+  const stripeWebhookStatus = env.stripeWebhookSecret ? "configured" : "missing";
+
   await ctx.reply(
     [
       "System status",
@@ -1348,12 +1350,13 @@ bot.command("status", async (ctx) => {
       `Bot: OK`,
       `Database: ${dbStatus}`,
       `OpenAI: ${openAiStatus}`,
+      `Stripe webhook: ${stripeWebhookStatus}`,
       `Environment: ${process.env.NODE_ENV ?? "development"}`,
       `Uptime: ${startedAtSecondsAgo} seconds`,
       "",
-      dbStatus === "OK" && openAiStatus === "OK"
+      dbStatus === "OK" && openAiStatus === "OK" && stripeWebhookStatus === "configured"
         ? "Everything looks healthy."
-        : "One or more systems have a problem. Check the terminal logs.",
+        : "One or more systems need attention. Check the VPS logs.",
     ].join("\n")
   );
 });
