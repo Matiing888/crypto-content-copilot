@@ -1034,17 +1034,26 @@ bot.command("upgrade", async (ctx) => {
     return;
   }
 
-  const keyboard = new InlineKeyboard().url("Pay with Stripe", session.url);
+  const keyboard = new InlineKeyboard().url("Unlock PRO with Stripe", session.url);
 
   await ctx.reply(
     [
-      "Upgrade to Crypto Content Copilot PRO",
+      "Unlock Crypto Content Copilot PRO",
       "",
-      "PRO: 9 EUR / month",
+      "Price: 9 EUR / month",
+      "",
+      "Create daily crypto and finance content without starting from a blank page.",
+      "",
+      "PRO gives you:",
+      "- more AI usage during MVP",
+      "- automatic daily content prompts",
+      "- more saved ideas",
+      "- more creator formats as the product grows",
+      "- priority access to new features",
       "",
       "Tap the button below to open Stripe Checkout.",
       "",
-      "After payment, your PRO plan will be activated automatically once Stripe confirms the subscription.",
+      "After payment, PRO is activated automatically when Stripe confirms your subscription.",
     ].join("\n"),
     {
       reply_markup: keyboard,
