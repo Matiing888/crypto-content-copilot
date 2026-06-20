@@ -1,0 +1,557 @@
+﻿@'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crypto Content Copilot</title>
+  <meta
+    name="description"
+    content="AI content co-pilot for crypto and finance creators. Generate hooks, scripts, X posts, viral angles, and daily content ideas."
+  />
+
+  <style>
+    :root {
+      --bg: #050b14;
+      --bg-soft: #071524;
+      --card: rgba(255, 255, 255, 0.055);
+      --card-border: rgba(24, 215, 255, 0.18);
+      --text: #ffffff;
+      --muted: #a9b4c2;
+      --cyan: #18d7ff;
+      --green: #4cff9a;
+      --line: rgba(255, 255, 255, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(24, 215, 255, 0.16), transparent 32%),
+        radial-gradient(circle at top right, rgba(76, 255, 154, 0.12), transparent 34%),
+        linear-gradient(180deg, #050b14 0%, #07111d 50%, #050b14 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 28px 0;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(16px);
+      background: rgba(5, 11, 20, 0.78);
+      z-index: 10;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      font-size: 20px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+      box-shadow: 0 0 34px rgba(24, 215, 255, 0.28);
+      display: grid;
+      place-items: center;
+      color: #03111c;
+      font-weight: 900;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 13px 22px;
+      font-weight: 750;
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      color: #03111c;
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+      box-shadow: 0 0 30px rgba(24, 215, 255, 0.18);
+    }
+
+    .btn-secondary {
+      border-color: var(--card-border);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .hero {
+      padding: 96px 0 72px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(to bottom, black, transparent 78%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid var(--card-border);
+      border-radius: 999px;
+      color: var(--cyan);
+      background: rgba(24, 215, 255, 0.06);
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0 auto;
+      max-width: 920px;
+      font-size: clamp(42px, 7vw, 82px);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      font-weight: 900;
+    }
+
+    .gradient {
+      background: linear-gradient(135deg, var(--cyan), var(--green));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 26px auto 0;
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 22px);
+    }
+
+    .hero-actions {
+      margin-top: 34px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .proof {
+      margin-top: 34px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    section {
+      padding: 72px 0;
+    }
+
+    .section-head {
+      max-width: 780px;
+      margin-bottom: 34px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(32px, 4vw, 48px);
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      font-size: 18px;
+      margin: 16px 0 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      border: 1px solid var(--card-border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.035));
+      border-radius: 24px;
+      padding: 24px;
+      min-height: 178px;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.18);
+    }
+
+    .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(24, 215, 255, 0.1);
+      border: 1px solid rgba(24, 215, 255, 0.22);
+      margin-bottom: 18px;
+      font-size: 22px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 21px;
+    }
+
+    .card p {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .pricing-card {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 28px;
+      align-items: center;
+      border: 1px solid rgba(76, 255, 154, 0.28);
+      background:
+        radial-gradient(circle at top right, rgba(76, 255, 154, 0.13), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035));
+      border-radius: 30px;
+      padding: 34px;
+    }
+
+    .price {
+      font-size: 58px;
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      margin: 8px 0 2px;
+    }
+
+    .price span {
+      font-size: 20px;
+      color: var(--muted);
+      letter-spacing: 0;
+      font-weight: 600;
+    }
+
+    ul {
+      margin: 20px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    li {
+      color: var(--muted);
+    }
+
+    li::before {
+      content: "✓";
+      color: var(--green);
+      font-weight: 900;
+      margin-right: 9px;
+    }
+
+    .disclaimer {
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.045);
+      border-radius: 24px;
+      padding: 26px;
+      color: var(--muted);
+    }
+
+    .faq {
+      display: grid;
+      gap: 14px;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--line);
+      padding: 18px 0;
+    }
+
+    .faq-item h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .faq-item p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    footer {
+      padding: 38px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 860px) {
+      .nav-links {
+        display: none;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pricing-card {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 72px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container nav">
+      <a href="#" class="brand">
+        <div class="brand-mark">C</div>
+        <span>Crypto Content Copilot</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a class="btn btn-secondary" href="https://t.me/crypto_creator_copilot_bot">Open Bot</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="eyebrow">AI content co-pilot for crypto creators</div>
+
+        <h1>
+          Daily AI content packs for
+          <span class="gradient">crypto & finance creators</span>
+        </h1>
+
+        <p>
+          Generate hooks, short-form scripts, X posts, viral angles, and daily content ideas.
+          Built for creators who want to publish consistently without financial advice or trading signals.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://t.me/crypto_creator_copilot_bot">Start with the Telegram Bot</a>
+          <a class="btn btn-secondary" href="#pricing">See PRO plan</a>
+        </div>
+
+        <div class="proof">
+          Hooks • Scripts • X Posts • Viral Angles • Daily Push
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="container">
+        <div class="section-head">
+          <h2>What Crypto Content Copilot does</h2>
+          <p>
+            A Telegram-based AI assistant that helps crypto and finance creators publish consistently without starting from a blank page.
+          </p>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <div class="icon">💬</div>
+            <h3>Hooks</h3>
+            <p>Scroll-stopping opening lines for posts, threads, and short-form videos.</p>
+          </div>
+
+          <div class="card">
+            <div class="icon">✍️</div>
+            <h3>Scripts</h3>
+            <p>Ready-to-use 30–60 second scripts for TikTok, Reels, Shorts, and X content.</p>
+          </div>
+
+          <div class="card">
+            <div class="icon">𝕏</div>
+            <h3>X Posts</h3>
+            <p>Turn content ideas into concise X posts and threads written for clarity and attention.</p>
+          </div>
+
+          <div class="card">
+            <div class="icon">📈</div>
+            <h3>Viral Angles</h3>
+            <p>Sharper angles built around curiosity, contrast, and creator positioning.</p>
+          </div>
+
+          <div class="card">
+            <div class="icon">⚡</div>
+            <h3>Daily Push</h3>
+            <p>Receive automatic daily content prompts directly inside Telegram.</p>
+          </div>
+
+          <div class="card">
+            <div class="icon">🔖</div>
+            <h3>Saved Ideas</h3>
+            <p>Save your best generated content packs and return to them later.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="container">
+        <div class="section-head">
+          <h2>Simple pricing</h2>
+          <p>Start free, upgrade when you want more daily AI content generation.</p>
+        </div>
+
+        <div class="pricing-card">
+          <div>
+            <div class="eyebrow">PRO plan</div>
+            <h2>Crypto Content Copilot PRO</h2>
+            <div class="price">9€ <span>/ month</span></div>
+            <p style="color: var(--muted); margin: 0;">
+              Built for creators who want to publish more consistently with AI-assisted content workflows.
+            </p>
+          </div>
+
+          <div>
+            <ul>
+              <li>30 AI actions per day</li>
+              <li>Daily automatic content push</li>
+              <li>More hooks</li>
+              <li>Rewrite for X</li>
+              <li>Make it viral</li>
+              <li>Saved content ideas</li>
+              <li>Creator profile settings</li>
+            </ul>
+
+            <div style="margin-top: 24px;">
+              <a class="btn btn-primary" href="https://t.me/crypto_creator_copilot_bot">Start with the Telegram Bot</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="disclaimer">
+      <div class="container">
+        <div class="section-head">
+          <h2>Important disclaimer</h2>
+        </div>
+
+        <div class="disclaimer">
+          Crypto Content Copilot is a content creation tool. It does not provide financial advice, investment recommendations,
+          trading signals, leverage guidance, price predictions, portfolio recommendations, or guaranteed outcomes.
+          All generated content is intended for educational, informational, and marketing purposes only.
+          Users are responsible for reviewing and editing generated content before publishing.
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="container">
+        <div class="section-head">
+          <h2>FAQ</h2>
+        </div>
+
+        <div class="faq">
+          <div class="faq-item">
+            <h3>Does Crypto Content Copilot provide financial advice?</h3>
+            <p>No. It is only a content creation tool and does not provide investment recommendations, trading signals, leverage guidance, price predictions, or guaranteed outcomes.</p>
+          </div>
+
+          <div class="faq-item">
+            <h3>Who is it for?</h3>
+            <p>Crypto creators, finance creators, Bitcoin educators, DeFi commentators, macro creators, and founder-led crypto brands.</p>
+          </div>
+
+          <div class="faq-item">
+            <h3>How much does PRO cost?</h3>
+            <p>Crypto Content Copilot PRO costs 9 EUR per month.</p>
+          </div>
+
+          <div class="faq-item">
+            <h3>How do I use it?</h3>
+            <p>Open the Telegram bot, set your creator profile, and use /today to generate your first content pack.</p>
+          </div>
+
+          <div class="faq-item">
+            <h3>How can I contact support?</h3>
+            <p>Email: matiingtrader@gmail.com</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <div>© 2026 Crypto Content Copilot</div>
+      <div>Support: matiingtrader@gmail.com</div>
+    </div>
+  </footer>
+</body>
+</html>
+'@ | Set-Content -Encoding utf8 docs\index.html
