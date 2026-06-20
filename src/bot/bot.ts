@@ -700,13 +700,14 @@ bot.command("settings", async (ctx) => {
 
   await ctx.reply(
     [
-      "Settings",
+      "Creator settings",
       "",
-      `Current platform: ${user.platform ?? "not set"}`,
-      `Current niche: ${user.niche ?? "not set"}`,
-      `Current style: ${user.style ?? "not set"}`,
+      "Current profile:",
+      `Platform: ${user.platform ?? "not set"}`,
+      `Niche: ${user.niche ?? "not set"}`,
+      `Style: ${user.style ?? "not set"}`,
       "",
-      "What do you want to change?",
+      "Choose what you want to update:",
     ].join("\n"),
     {
       reply_markup: keyboard,
