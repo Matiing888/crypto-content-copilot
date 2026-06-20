@@ -330,7 +330,7 @@ bot.command("today", async (ctx) => {
 
   const activeUser = limitCheck.user;
 
-  await ctx.reply("Generating your content pack...");
+  await ctx.reply("Creating today's content pack...");
 
   try {
     const result = await generateContentPack({
@@ -350,7 +350,17 @@ bot.command("today", async (ctx) => {
 
     await incrementDailyGenerations(activeUser.id);
 
-    await ctx.reply(result.content, {
+    const formattedContent = [
+      "Today's content pack",
+      "",
+      `Creator setup: ${formatEnumLabel(activeUser.platform)} � ${formatEnumLabel(activeUser.niche)} � ${formatEnumLabel(activeUser.style)}`,
+      "",
+      result.content,
+      "",
+      "Use the buttons below to expand or repurpose this idea.",
+    ].join("\n");
+
+    await ctx.reply(formattedContent, {
       reply_markup: contentPackKeyboard(),
     });
   } catch (error) {
