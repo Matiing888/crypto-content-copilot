@@ -978,7 +978,16 @@ bot.command("upgrade", async (ctx) => {
   }
 
   if (user.tier === "PRO") {
-    await ctx.reply("You are already on PRO. Use /billing to manage your subscription.");
+    await ctx.reply(
+      [
+        "You are already on Crypto Content Copilot PRO.",
+        "",
+        "Your subscription is active.",
+        "",
+        "Use /plan to check your current plan.",
+        "Use /billing to manage or cancel your subscription.",
+      ].join("\n")
+    );
     return;
   }
 
