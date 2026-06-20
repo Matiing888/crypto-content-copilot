@@ -1183,7 +1183,7 @@ bot.command("admin_pro", async (ctx) => {
   }
 
   if (String(ctx.from.id) !== adminTelegramId) {
-    await ctx.reply("You are not allowed to use this admin command.");
+    await ctx.reply("Command not available.");
     return;
   }
 
@@ -1240,7 +1240,7 @@ bot.command("admin_free", async (ctx) => {
   }
 
   if (String(ctx.from.id) !== adminTelegramId) {
-    await ctx.reply("You are not allowed to use this admin command.");
+    await ctx.reply("Command not available.");
     return;
   }
 
@@ -1435,7 +1435,7 @@ bot.command("admin_stats", async (ctx) => {
   const adminTelegramId = process.env.ADMIN_TELEGRAM_ID;
 
   if (!adminTelegramId || String(ctx.from.id) !== adminTelegramId) {
-    await ctx.reply("You are not allowed to use this admin command.");
+    await ctx.reply("Command not available.");
     return;
   }
 
@@ -1524,7 +1524,7 @@ bot.command("admin_users", async (ctx) => {
   const adminTelegramId = process.env.ADMIN_TELEGRAM_ID;
 
   if (!adminTelegramId || String(ctx.from.id) !== adminTelegramId) {
-    await ctx.reply("You are not allowed to use this admin command.");
+    await ctx.reply("Command not available.");
     return;
   }
 
